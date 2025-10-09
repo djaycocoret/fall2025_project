@@ -4,46 +4,128 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "grid_object.h"
+#include <iomanip>
+
 
 class Grid {
-    std::vector<std::string> grid;
+
+    public:
+    GO** grid; // point to an array of pointers to grid objects
     int rows, columns;
     int size;
 
-    public:
-
     Grid(int rows, int columns);
-    void print_grid() const;
 
-    std::string& operator()(int row, int column);
-    const std::string& operator()(int row, int column) const;
+    ~Grid() { //deconstructor
+        for (int i = 0; i < size; i++) {
+            if (grid[i] != nullptr) {
+                delete grid[i];
+            }
+        }
+        delete[] grid;
+    }
+
+    void print_grid(bool clear_output) const;
+
+    GO*& operator()(int row, int column);
+    const GO* operator()(int row, int column) const;
+
+    void place(int row, int column, GO*);
+
+    GO*& id(int row, int column);
+    void move(int row, int column, int row_new, int column_new);
+    void delete_object(int row, int column);
+    void update() {
+        for (int i = 0; i < size; i++) {
+            if (grid[i] != nullptr) {
+                //std::cout << "(" << (int)i/columns + 1<< ", " << i % columns + 1 << ")";
+                grid[i]->update();
+            }
+        }
+        for (int i = 0; i < size; i++) {
+            if (grid[i] != nullptr) {
+                grid[i]->end_turn();
+            }
+        }
+    }
 };
 
 inline Grid::Grid(int rows, int columns)
     : rows(rows), columns(columns), size(rows * columns) {
-    grid.resize(rows*columns);
+    grid = new GO*[rows * columns];
     for (int i = 0; i < size; i++) {
-        grid[i] = " ";
+        grid[i] = nullptr;
     }
-    this->operator()(rows - 1, 10) = "c";
 }
 
-inline void Grid::print_grid() const {
+inline void Grid::move(int row, int column, int row_new, int column_new) {
+    //check for valid input
+    //check if spot is empty
+    this->operator()(row_new, column_new) = this->operator()(row, column);
+    this->operator()(row, column) = nullptr;
+}
+
+inline void Grid::delete_object(int row, int column) {
+    GO*& object = this->operator()(row, column);
+    this->operator()(row, column) = nullptr;
+    delete object;
+}
+
+inline void Grid::print_grid(bool clear_output = true) const {
+    if (clear_output) {
+    system("clear");
+    }
+    std::cout << "health: " << this->operator()(20,10)->get_health() << "/100" << " ";
+    std::cout << "points: " << 0 << " ";
+    std::cout << "high score: " << 0 << " ";
+    std::cout << std::endl;
+    std::cout << "  ";
+    for (int i = 0; i < columns; i ++) {
+        std::cout << std::right << std::setw(3) <<  i + 1 << " ";
+    }
+    std::cout << std::endl;
     for (int i = 0; i < size; i++) {
-        if (i % columns == 0 && i != 0) {
-            std::cout << std::endl;
+        if (i % columns == 0) {
+            if (i != 0) {
+              std::cout << std::endl;
+            }
+            std::cout << std::right << std::setw(2) <<((int)i / columns) + 1;
         }
-        std::cout << grid[i] << " ";
+        if (grid[i] != nullptr) {
+            std::cout << std::right << std::setw(3) << grid[i]->id << " ";
+        } else {
+            std::cout<< std::right << std::setw(3) << " " << " ";
+        }
     }
     std::cout << std::endl;
 }
 
-inline std::string& Grid::operator()(int row, int column) {
-    return grid[row * columns + column];
+
+inline void Grid::place(int row, int column, GO* object) {
+    if (row <= rows && column <= columns && row >= 0 && columns >= 0) {
+        this->operator()(row, column) = object;
+    }
 }
 
-inline const std::string& Grid::operator()(int row, int column) const {
-    return grid[row * columns + column];
+inline GO*& Grid::operator()(int row, int column) {
+    if (row <= rows && column <= columns && row >= 0 && columns >= 0) {
+        return grid[(row-1) * columns + (column-1)];
+    } else {
+        return grid[0];
+    }
+}
+
+inline GO*& Grid::id(int row, int column) {
+    if (row <= rows && column <= columns && row >= 0 && columns >= 0) {
+        return grid[(row) * columns + (column)];
+    } else {
+        return grid[0];
+    }
+}
+
+inline const GO* Grid::operator()(int row, int column) const {
+    return grid[(row-1) * columns + (column-1)];
 }
 
 #endif

@@ -1,3 +1,16 @@
 02/10/2025
-
 Initialised project. Announcement next week.
+
+07/10/2025
+grid -> maybe row major indexing?
+
+10 - 15 minute presentation about a challange or feature
+
+worked from 16:00 till 21:00
+
+8
+
+the grid is now an array of pointers to an object
+
+
+look up how to clear the terminal in cpp

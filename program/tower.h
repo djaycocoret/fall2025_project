@@ -1,8 +1,8 @@
 #ifndef TOWER_H_
 #define TOWER_H_
 
-#include "grid new.h"
-#include "grid_object new.h"
+#include "grid.h"
+#include "grid_object.h"
 #include <cmath>
 #include <iostream>
 

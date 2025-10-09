@@ -1,8 +1,8 @@
 #ifndef CASTLE_H_
 #define CASTLE_H_
 
-#include "grid_object new.h"
-#include "grid new.h"
+#include "grid_object.h"
+#include "grid.h"
 #include <utility>
 
 class Castle : public GO {
