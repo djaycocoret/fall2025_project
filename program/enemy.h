@@ -1,0 +1,50 @@
+#ifndef ENEMY_H_
+#define ENEMY_H_
+
+#include "grid_object new.h"
+#include "grid new.h"
+#include <utility>
+
+class Enemy : public GO {
+    public:
+
+    Grid* grid;
+
+    int health = 100;
+    int speed = 1;
+    int power = 10;
+
+    Enemy(int row, int column, Grid*& grid)
+        : GO(row, column), grid(grid) {
+            id = 'e';
+
+        }
+
+    void update() override {
+        if (turn) {
+            this->move_forward();
+            turn = false;
+        }
+    }
+
+    void move_forward() override {
+        if (row+speed < grid->rows) {
+            grid->move(row, column, row + this->speed, column);
+            row = row + this->speed;
+        } else {
+            std::cout << "____" << row << " " << speed << std::endl;
+            std::cout << "dead";
+            grid->operator()(row+1, 10)->take_damage(10);
+            grid->delete_object(row, column);
+        }
+    }
+
+    void take_damage(int dmg) override {
+        health = health - dmg;
+        if (health <= 0) {
+            grid->delete_object(this->row, this->column);
+        }
+    }
+};
+
+#endif
