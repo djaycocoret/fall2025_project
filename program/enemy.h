@@ -28,13 +28,13 @@ class Enemy : public GO {
     }
 
     void move_forward() override {
-        if (row+speed < grid->rows) {
+        if (row+speed <= grid->rows) {
             grid->move(row, column, row + this->speed, column);
             row = row + this->speed;
         } else {
             std::cout << "____" << row << " " << speed << std::endl;
             std::cout << "dead";
-            grid->operator()(row+1, 10)->take_damage(10);
+            grid->operator()(grid->rows, (int)grid->columns/2)->take_damage(10);
             grid->delete_object(row, column);
         }
     }

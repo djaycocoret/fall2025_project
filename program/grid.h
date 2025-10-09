@@ -68,15 +68,15 @@ inline void Grid::move(int row, int column, int row_new, int column_new) {
 
 inline void Grid::delete_object(int row, int column) {
     GO*& object = this->operator()(row, column);
-    this->operator()(row, column) = nullptr;
     delete object;
+    this->operator()(row, column) = nullptr;
 }
 
 inline void Grid::print_grid(bool clear_output = true) const {
     if (clear_output) {
     system("clear");
     }
-    std::cout << "health: " << this->operator()(20,10)->get_health() << "/100" << " ";
+    std::cout << "health: " << this->operator()(rows,(int)columns/2)->get_health() << "/100" << " ";
     std::cout << "points: " << 0 << " ";
     std::cout << "high score: " << 0 << " ";
     std::cout << std::endl;
