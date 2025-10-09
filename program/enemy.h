@@ -10,7 +10,7 @@ class Enemy : public GO {
 
     Grid* grid;
 
-    int health = 100;
+    int health = 1;
     int speed = 1;
     int power = 10;
 

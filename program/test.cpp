@@ -22,6 +22,8 @@ int main() {
 
     place_object<Tower>(grid, 6, 6);
 
+    place_object<Tower>(grid, 10, 3);
+
     place_object<Enemy>(grid, 1, 4);
     place_object<Enemy>(grid, 1, 16);
     place_object<Enemy>(grid, 1, 12);

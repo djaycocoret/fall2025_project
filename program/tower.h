@@ -9,7 +9,7 @@
 class Tower : public GO {
     Grid* grid;
     int power = 1;
-    int range = 1;
+    int range = 3;
     public:
 
     Tower(int row, int column, Grid*& grid)
