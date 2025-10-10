@@ -12,7 +12,7 @@
 class Grid {
 
     public:
-    GO** grid; // point to an array of pointers to grid objects
+    std::vector<GO*> grid;
     int rows, columns;
     int size;
 
@@ -24,7 +24,6 @@ class Grid {
                 delete grid[i];
             }
         }
-        delete[] grid;
     }
 
     void print_grid(Owner<GO*>* owner, bool clear_output) const;
@@ -54,10 +53,7 @@ class Grid {
 
 inline Grid::Grid(int rows, int columns)
     : rows(rows), columns(columns), size(rows * columns) {
-    grid = new GO*[rows * columns];
-    for (int i = 0; i < size; i++) {
-        grid[i] = nullptr;
-    }
+    grid.resize(rows*columns, nullptr);
 }
 
 inline void Grid::move(int row, int column, int row_new, int column_new) {
@@ -75,7 +71,7 @@ inline void Grid::delete_object(int row, int column) {
 
 inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true) const {
     if (clear_output) {
-    //system("clear");
+        system("clear");
     }
     std::cout << "health: " << this->operator()(rows,(int)columns/2)->get_health() << "/100" << " ";
     if (owner != nullptr) {
@@ -93,6 +89,7 @@ inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true
     for (int i = 0; i < size; i++) {
         if (i % columns == 0) {
             if (i != 0) {
+                std::cout << std::right << std::setw(2) <<((int)i / columns);
               std::cout << std::endl;
             }
             std::cout << std::right << std::setw(2) <<((int)i / columns) + 1;

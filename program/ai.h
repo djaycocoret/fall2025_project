@@ -10,6 +10,7 @@ class AI : public Owner<GO*> {
 
     AI() : Owner<GO*>() {
         max_health = 3;
+        name = "AI";
     }
 
     ~AI() {}

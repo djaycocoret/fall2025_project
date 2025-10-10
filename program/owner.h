@@ -2,24 +2,51 @@
 #define OWNER_H_
 
 
+#include <iomanip>
+#include <ios>
 #include <iostream>
+#include <string>
 #include <vector>
 template<typename T>
 class Owner {
 
-    std::vector<T> items;
+    std::vector<T>* items = new std::vector<T>;
+    bool game_over;
+
+    protected:
+    std::string name = "default";
 
     protected:
 
     int max_health = 1;
     int score = 0;
-    Owner* opponent;
+    Owner<T>* opponent;
 
     public:
 
-    Owner(Owner<T>* opponent = nullptr) : opponent(opponent) {}
+    Owner(Owner<T>* opponent = nullptr) : opponent(opponent) {
+        game_over = false;
+        items->resize(5);
+    }
 
-    ~Owner() {}
+    ~Owner() {
+        delete items;
+    }
+
+    T get_items(int i) {
+        size_t id = i;
+        return items->at(id);
+    }
+
+    void set_item(T obj, int index) {
+        //check if in bounds
+        size_t i = index;
+        items->at(i) = obj;
+    }
+
+    void delete_from_items(int index) {
+        items->at(index) = nullptr;
+    }
 
     virtual int get_max_health() const {
         return max_health;
@@ -41,17 +68,27 @@ class Owner {
         score = score + n;
     }
 
-    virtual void add_object(T obj) { //unsafe must find way to delete object from items, since it also gets deleted by the grid
-        items.push_back(obj);
-    }
-
     void print_objects() {
-        for (const auto& element : items) {
-                std::cout << element->get_position() << " ";
+        std::cout << std::left << std::setw(7) << this->name << ": ";
+        for (size_t i = 0 ; i < 5; i++) {
+            if (items->at(i) != nullptr) {
+                std::cout << items->at(i)->get_position() << " ";
             }
+        }
+        std::cout << std::endl;
     }
 
+    bool operator!=(const Owner& other) const {
+        return true;
+    }
 
+    virtual void set_game_over(bool val) {
+        game_over = val;
+    }
+
+    virtual bool get_game_over() const {
+        return game_over;
+    }
 };
 
 #endif

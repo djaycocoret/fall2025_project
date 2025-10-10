@@ -6,15 +6,16 @@
 #include <utility>
 
 class Castle : public GO {
+
     public:
 
     Grid* grid;
 
-    int health = 100;
+    int health = 9;
     int speed = 1;
 
-    Castle(int row, int column, Grid*& grid)
-        : GO(row, column), grid(grid) {
+    Castle(int row, int column, Grid*& grid, Owner<GO*>* owner)
+        : GO(row, column, owner), grid(grid) {
             id = 'c';
 
         }
@@ -25,12 +26,11 @@ class Castle : public GO {
 
     void take_damage(int dmg) override {
         health = health - dmg;
-        std::cout << "took damage, remaining health:" << health;
-        if (dmg < 0) {
-            //game over
-            //no idea how to do this
+        if (health <= 0) {
+            owner->set_game_over(true);
         }
     }
+
 };
 
 #endif

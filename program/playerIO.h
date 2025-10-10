@@ -9,6 +9,7 @@ class Player : public Owner<GO*> {
     public:
 
     Player(Owner<GO*>* opp) : Owner(opp) {
+        name = "player";
     }
 
     ~Player() {}
