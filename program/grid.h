@@ -6,6 +6,7 @@
 #include <iostream>
 #include "grid_object.h"
 #include <iomanip>
+#include "owner.h"
 
 
 class Grid {
@@ -26,7 +27,7 @@ class Grid {
         delete[] grid;
     }
 
-    void print_grid(bool clear_output) const;
+    void print_grid(Owner* owner, bool clear_output) const;
 
     GO*& operator()(int row, int column);
     const GO* operator()(int row, int column) const;
@@ -72,12 +73,16 @@ inline void Grid::delete_object(int row, int column) {
     this->operator()(row, column) = nullptr;
 }
 
-inline void Grid::print_grid(bool clear_output = true) const {
+inline void Grid::print_grid(Owner* owner=nullptr, bool clear_output = true) const {
     if (clear_output) {
     system("clear");
     }
     std::cout << "health: " << this->operator()(rows,(int)columns/2)->get_health() << "/100" << " ";
-    std::cout << "points: " << 0 << " ";
+    if (owner != nullptr) {
+        std::cout << "points: " << owner->get_score() << " ";
+    } else {
+            std::cout << "points: " << "E" << " ";
+    }
     std::cout << "high score: " << 0 << " ";
     std::cout << std::endl;
     std::cout << "  ";

@@ -3,6 +3,7 @@
 
 #include "grid.h"
 #include "grid_object.h"
+#include "owner.h"
 #include <cmath>
 #include <iostream>
 
@@ -12,8 +13,8 @@ class Tower : public GO {
     int range = 3;
     public:
 
-    Tower(int row, int column, Grid*& grid)
-        : GO(row, column), grid(grid) {
+    Tower(int row, int column, Owner* owner, Grid*& grid)
+        : GO(row, column, owner), grid(grid) {
             id = 't';
         }
 

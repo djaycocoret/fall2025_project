@@ -6,13 +6,15 @@
 #include "enemy.h"
 #include "castle.h"
 #include "sleep.h"
+#include "owner.h"
 
 
 class Game {
     Grid* grid;
+    Owner* player;
     public:
 
-    Game(int rows, int columns) {
+    Game(int rows, int columns, Owner* player) : player(player) {
         grid = new Grid(rows, columns);
         grid->place(rows, (int)columns/2, new Castle(rows, (int)columns/2, grid));
     }
@@ -28,7 +30,7 @@ class Game {
 
     void update() {
         grid->update();
-        grid->print_grid();
+        grid->print_grid(player);
         sleep(2);
     }
 };

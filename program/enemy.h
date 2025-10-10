@@ -45,6 +45,7 @@ class Enemy : public GO {
     void take_damage(int dmg) override {
         health = health - dmg;
         if (health <= 0) {
+            this->owner->return_opponent()->adjust_score(10);
             grid->delete_object(this->row, this->column);
         }
     }

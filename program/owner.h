@@ -19,6 +19,10 @@ class Owner {
         return max_health;
     }
 
+    virtual void set_opponent(Owner* opp) {
+        opponent = opp; //maybe make this a vector for dynamical
+    }
+
     virtual int get_score() const {
         return score;
     }
