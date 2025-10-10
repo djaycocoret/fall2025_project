@@ -8,19 +8,20 @@
 #include "game.h"
 
 int main() {
-    AI ai;
-    Player player(&ai);
-    Game game(10,10, &player);
-    ai.set_opponent(&player);
+    AI* ai = new AI;
+    Player* player = new Player(ai);
+    Game game(10,10, player, ai);
+    ai->set_opponent(player);
 
-    game.place_object<Enemy>(1,5, &ai);
-    game.place_object<Tower>(4,4,&player);
+    game.place_object<Enemy>(1,5, ai);
+    game.place_object<Tower>(4,4,player);
 
     for (int i = 0; i <5; i++) {
         game.update();
     }
 
-
+    delete ai;
+    delete player;
 
     return 0;
 }

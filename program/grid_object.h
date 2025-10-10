@@ -2,6 +2,7 @@
 #define GRID_OBJECT_H_
 
 #include <iostream>
+#include <string>
 #include "owner.h"
 
 class GO {
@@ -10,14 +11,14 @@ class GO {
     int row;
     int column;
     bool turn = true;
-    Owner* owner;
+    Owner<GO*>* owner;
 
     public:
 
     char id = 'o';
     int health;
 
-    GO(int row, int column, Owner* owner = nullptr)
+    GO(int row, int column, Owner<GO*>* owner = nullptr)
         : row(row), column(column), owner(owner) {
         }
 
@@ -43,6 +44,10 @@ class GO {
 
     virtual void end_turn() {
         turn = true;
+    }
+
+    std::string get_position() {
+        return "(" + std::to_string(row) + ", " + std::to_string(column) + ")";
     }
 
 };

@@ -27,7 +27,7 @@ class Grid {
         delete[] grid;
     }
 
-    void print_grid(Owner* owner, bool clear_output) const;
+    void print_grid(Owner<GO*>* owner, bool clear_output) const;
 
     GO*& operator()(int row, int column);
     const GO* operator()(int row, int column) const;
@@ -73,9 +73,9 @@ inline void Grid::delete_object(int row, int column) {
     this->operator()(row, column) = nullptr;
 }
 
-inline void Grid::print_grid(Owner* owner=nullptr, bool clear_output = true) const {
+inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true) const {
     if (clear_output) {
-    system("clear");
+    //system("clear");
     }
     std::cout << "health: " << this->operator()(rows,(int)columns/2)->get_health() << "/100" << " ";
     if (owner != nullptr) {

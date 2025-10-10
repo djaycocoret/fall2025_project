@@ -2,16 +2,18 @@
 #define AI_H_
 
 #include "owner.h"
+#include "grid_object.h"
 
 
-class AI : public Owner {
+class AI : public Owner<GO*> {
     public:
 
-    AI() : Owner() {
+    AI() : Owner<GO*>() {
         max_health = 3;
     }
 
     ~AI() {}
+
 };
 
 

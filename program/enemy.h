@@ -14,7 +14,7 @@ class Enemy : public GO {
     int speed = 1;
     int power = 10;
 
-    Enemy(int row, int column, Owner* owner, Grid*& grid)
+    Enemy(int row, int column, Owner<GO*>* owner, Grid*& grid)
         : GO(row, column, owner), grid(grid) {
             id = 'e';
             if (owner != nullptr) {

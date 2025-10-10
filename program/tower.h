@@ -13,7 +13,7 @@ class Tower : public GO {
     int range = 3;
     public:
 
-    Tower(int row, int column, Owner* owner, Grid*& grid)
+    Tower(int row, int column, Owner<GO*>* owner, Grid*& grid)
         : GO(row, column, owner), grid(grid) {
             id = 't';
         }
