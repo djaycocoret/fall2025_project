@@ -26,7 +26,7 @@ class Owner {
 
     Owner(Owner<T>* opponent = nullptr) : opponent(opponent) {
         game_over = false;
-        items->resize(5);
+        items->resize(6);
     }
 
     ~Owner() {

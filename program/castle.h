@@ -31,6 +31,7 @@ class Castle : public GO {
         }
     }
 
+
 };
 
 #endif
