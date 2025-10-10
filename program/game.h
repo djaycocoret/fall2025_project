@@ -22,8 +22,8 @@ class Game {
     }
 
     template<typename T>
-    void place_object(int row, int column) {
-        grid->place(row, column, new T(row, column, grid));
+    void place_object(int row, int column, Owner* owner) {
+        grid->place(row, column, new T(row, column, owner, grid));
     }
 
     void update() {

@@ -2,20 +2,23 @@
 #define GRID_OBJECT_H_
 
 #include <iostream>
+#include "owner.h"
+
 class GO {
     protected:
 
     int row;
     int column;
     bool turn = true;
+    Owner* owner;
 
     public:
 
     char id = 'o';
     int health;
 
-    GO(int row, int column)
-        : row(row), column(column) {
+    GO(int row, int column, Owner* owner = nullptr)
+        : row(row), column(column), owner(owner) {
         }
 
     virtual ~GO() {}
