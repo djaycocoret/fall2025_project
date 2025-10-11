@@ -14,11 +14,14 @@ int main() {
     ai->set_opponent(player);
 
     game.place_object<Enemy>(1,2, ai);
+    game.place_object<Enemy>(1,7, ai);
+
+
     game.place_object<Tower>(4,7,player);
 
     game.place_object<Tower>(8,7,player);
 
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 60; i++) {
         game.update();
     }
 

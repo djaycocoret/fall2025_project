@@ -10,30 +10,21 @@ class GO {
 
     int row;
     int column;
-    int index_thing;
-    bool turn = true;
+
+    bool turn = false;
     Owner<GO*>* owner;
 
     public:
+
+    int index_thing;
 
     char id = 'o';
     int health;
 
     GO(int row, int column, Owner<GO*>* owner = nullptr)
-        : row(row), column(column), owner(owner) {
-            if (owner != nullptr) {
-                for (int i = 0; i < 5; i++) {
-                    if (owner->get_items(i) == nullptr) {
-                        index_thing = i;
-                        owner->set_item(this , i);
-                        return;
-                    }
-                }
-            }
-        }
+        : row(row), column(column), owner(owner) {}
 
-    virtual ~GO() {
-    }
+    virtual ~GO() {}
 
     void remove_from_owner() {
         owner->delete_from_items(index_thing);
@@ -53,6 +44,10 @@ class GO {
 
     virtual Owner<GO*>* return_owner() {
         return owner;
+    }
+
+    void set_index(int i) {
+        index_thing = i;
     }
 
     virtual int get_health() const {

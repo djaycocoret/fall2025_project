@@ -11,6 +11,7 @@
 
 
 class Game {
+    bool game_over_thing = false;
     Grid* grid;
     Owner<GO*>* player;
     Owner<GO*>* ai;
@@ -29,11 +30,32 @@ class Game {
     void place_object(int row, int column, Owner<GO*>* owner) {
         T* obj = new T(row, column, owner, grid);
         grid->place(row, column, obj);
+        for (int i = 0; i < 5; i++) {
+            if (owner->get_items(i) == nullptr) {
+                owner->set_item(obj, i); //when deleting item be carefull with pointers
+                obj->set_index(i);
+                return;
+            }
+        }
     }
 
+
     void update() {
-        if (!this->game_over()) {
-            grid->update();
+        bool new_game_over = player->get_game_over() || ai->get_game_over();
+        bool show_end_screen = (new_game_over != game_over_thing);
+        game_over_thing = new_game_over;
+        if (!this->game_over_thing) {
+
+            //grid->update();
+
+            //above should be replaced with
+            //
+            int* column = new int;
+            if (ai->make_move(column) > 0) {
+                this->place_object<Enemy>(1, *column, ai);
+            }
+            player->make_move(nullptr); //shoots
+
             grid->print_grid(player);
             std::cout << std::endl;
             player->print_objects();
@@ -44,12 +66,9 @@ class Game {
             std::cout << "game over man" << std::endl;
             std::cout << std::left << std::setw(10) << "score" << ": " << std::right << std::setw(6) << player->get_score() << std::endl;
             std::cout << std::left << std::setw(10) << "high score" << ": " <<  std::right << std::setw(6) << "123456" << std::endl;
+
             //how to break??
         }
-    }
-
-    bool game_over() const {
-        return player->get_game_over() || ai->get_game_over();
     }
 };
 

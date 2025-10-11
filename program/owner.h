@@ -7,14 +7,16 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 template<typename T>
 class Owner {
 
-    std::vector<T>* items = new std::vector<T>;
+
     bool game_over;
 
     protected:
     std::string name = "default";
+    std::vector<T>* items = new std::vector<T>;
 
     protected:
 
@@ -30,6 +32,9 @@ class Owner {
     }
 
     ~Owner() {
+        for (size_t i = 0; i < items->size(); i++) {
+            items->at(i) = nullptr;
+        }
         delete items;
     }
 
@@ -66,6 +71,20 @@ class Owner {
 
     virtual void adjust_score(int n) {
         score = score + n;
+    }
+
+
+    virtual int make_move(int* column_move) {
+        for (size_t i = 0; i < items->size(); i++) {
+            if (items->at(i) != nullptr) {
+                items->at(i)->update();
+            }
+        }
+        return 1;
+    }
+
+    virtual std::vector<int> make_move_() {
+        return std::vector<int> {0};
     }
 
     void print_objects() {

@@ -34,7 +34,7 @@ class Grid {
     void place(int row, int column, GO*);
 
     GO*& id(int row, int column);
-    void move(int row, int column, int row_new, int column_new);
+    bool move(int row, int column, int row_new, int column_new);
     void delete_object(int row, int column);
     void update() {
         for (int i = 0; i < size; i++) {
@@ -49,18 +49,32 @@ class Grid {
             }
         }
     }
+
+    void place_ai(int column, GO* obj);
 };
+
+inline void Grid::place_ai(int column, GO* obj) {
+    this->place(1, column, obj);
+}
 
 inline Grid::Grid(int rows, int columns)
     : rows(rows), columns(columns), size(rows * columns) {
     grid.resize(rows*columns, nullptr);
 }
 
-inline void Grid::move(int row, int column, int row_new, int column_new) {
-    //check for valid input
-    //check if spot is empty
-    this->operator()(row_new, column_new) = this->operator()(row, column);
-    this->operator()(row, column) = nullptr;
+inline bool Grid::move(int row, int column, int row_new, int column_new) {
+    if (row_new <= 0 || row_new > rows || column_new <= 0 || column_new > column) {
+        std::cout << "something wrong" << std::endl;
+        return false;
+    }
+    //does not move if it cannot move
+    if (this->operator()(row_new, column_new) == nullptr) {
+        this->operator()(row_new, column_new) = this->operator()(row, column);
+        this->operator()(row, column) = nullptr;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 inline void Grid::delete_object(int row, int column) {

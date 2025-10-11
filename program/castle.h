@@ -11,13 +11,12 @@ class Castle : public GO {
 
     Grid* grid;
 
-    int health = 9;
+    int health = 100;
     int speed = 1;
 
     Castle(int row, int column, Grid*& grid, Owner<GO*>* owner)
         : GO(row, column, owner), grid(grid) {
             id = 'c';
-
         }
 
     int get_health() const override {
@@ -30,8 +29,6 @@ class Castle : public GO {
             owner->set_game_over(true);
         }
     }
-
-
 };
 
 #endif
