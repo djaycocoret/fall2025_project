@@ -51,10 +51,14 @@ class Game {
             //above should be replaced with
             //
             int* column = new int;
-            if (ai->make_move(column) > 0) {
+            int* index = new int;
+            ai->make_move(column, index);
+            if (*index > 0) {
                 this->place_object<Enemy>(1, *column, ai);
             }
-            player->make_move(nullptr); //shoots
+            delete column;
+            delete index;
+            player->make_move(nullptr, nullptr); //shoots
 
             grid->print_grid(player);
             std::cout << std::endl;

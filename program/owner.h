@@ -74,7 +74,7 @@ class Owner {
     }
 
 
-    virtual int make_move(int* column_move) {
+    virtual int make_move(int* column_move, int* index) {
         for (size_t i = 0; i < items->size(); i++) {
             if (items->at(i) != nullptr) {
                 items->at(i)->update();

@@ -17,15 +17,18 @@ class AI : public Owner<GO*> {
 
     ~AI() {}
 
-    int make_move(int* column_move) override {
-        for (size_t i = 0; i < items->size(); i++) {
+    int make_move(int* column_move, int* index) override {
+        *index = -1;
+        for (size_t i = 0; i < 5; i++) {
             if (items->at(i) == nullptr) {
                 //place
                 int columns = 10; // hardcoded for now
                 *column_move = random_int(1, columns);
-                return 1;
+                *index = i;
             } else {
-                items->at(i)->update();
+                if (items->at(i) != nullptr) {
+                    items->at(i)->update();
+                }
             }
         }
         return -1;
