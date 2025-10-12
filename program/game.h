@@ -8,18 +8,26 @@
 #include "sleep.h"
 #include "owner.h"
 #include <iomanip>
+#include <vector>
 
 
 class Game {
-    bool game_over_thing = false;
+    bool generate = true;
     Grid* grid;
     Owner<GO*>* player;
     Owner<GO*>* ai;
+
+    int enemies_placed = 0;
+    int wave = 1;
     public:
+
+    bool game_over_thing = false;
 
     Game(int rows, int columns, Owner<GO*>* player, Owner<GO*>* ai) : player(player), ai(ai) {
         grid = new Grid(rows, columns);
         grid->place(rows, (int)columns/2, new Castle(rows, (int)columns/2, grid, player));
+        player->set_dimensions(grid->rows, grid->columns);
+        ai->set_dimensions(grid->rows, grid->columns);
     }
 
     ~Game() {
@@ -44,27 +52,40 @@ class Game {
         bool new_game_over = player->get_game_over() || ai->get_game_over();
         bool show_end_screen = (new_game_over != game_over_thing);
         game_over_thing = new_game_over;
+        if (enemies_placed >= 10) {
+            generate = false;
+        }
+        if (ai->is_empty() && !generate) {
+            wave++;
+            if (player->get_score() >= wave * 80) {
+                ai->add_max_health(1);
+            }
+            enemies_placed = 0;
+            generate = true;
+            ai->add_max_health(1);
+        }
+        if (wave > 5) {
+            this->game_over_thing = true;
+        }
         if (!this->game_over_thing) {
-
-            //grid->update();
-
-            //above should be replaced with
-            //
             int* column = new int;
-            int* index = new int;
-            ai->make_move(column, index);
-            if (*index > 0) {
+            *column = -1;
+            ai->make_move(column);
+            if (*column > 0 && enemies_placed < 10 && generate) {
                 this->place_object<Enemy>(1, *column, ai);
+                enemies_placed++;
             }
             delete column;
-            delete index;
-            player->make_move(nullptr, nullptr); //shoots
-
-            grid->print_grid(player);
+            player->make_move(nullptr); //shoots
+            ai->generate_probs();
+            std::vector<double>* ptr = new std::vector<double>;;
+            *ptr = ai->generate_probs();
+            grid->print_grid(player,true,  &wave, ptr);
+            delete ptr;
             std::cout << std::endl;
             player->print_objects();
             ai->print_objects();
-            sleep(1);
+
         } else {
             system("clear");
             std::cout << "game over man" << std::endl;

@@ -5,6 +5,7 @@
 #include "grid_object.h"
 
 
+
 class Player : public Owner<GO*> {
     public:
 
@@ -13,6 +14,12 @@ class Player : public Owner<GO*> {
     }
 
     ~Player() {}
+
+    int make_move(int* column_move) {
+        Owner<GO*>::make_move(column_move);
+
+        return -1;
+    }
 };
 
 

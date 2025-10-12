@@ -10,19 +10,16 @@
 int main() {
     AI* ai = new AI;
     Player* player = new Player(ai);
-    Game game(10,10, player, ai);
+    Game game(20,20, player, ai);
     ai->set_opponent(player);
 
-    game.place_object<Enemy>(1,2, ai);
-    game.place_object<Enemy>(1,7, ai);
-
-
     game.place_object<Tower>(4,7,player);
+    game.place_object<Tower>(6,4,player);
+    game.place_object<Tower>(5,5,player);
 
-    game.place_object<Tower>(8,7,player);
-
-    for (int i = 0; i < 60; i++) {
+    while (!game.game_over_thing) {
         game.update();
+        sleep(1);
     }
 
     delete ai;

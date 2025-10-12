@@ -5,16 +5,21 @@
 #include <string>
 #include "owner.h"
 
+
+
 class GO {
     protected:
 
     int row;
     int column;
 
+
     bool turn = false;
     Owner<GO*>* owner;
 
     public:
+
+
 
     int index_thing;
 
@@ -27,6 +32,7 @@ class GO {
     virtual ~GO() {}
 
     void remove_from_owner() {
+        owner->return_death(this->row, this->column);
         owner->delete_from_items(index_thing);
     }
 

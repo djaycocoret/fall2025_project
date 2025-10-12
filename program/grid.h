@@ -7,6 +7,7 @@
 #include "grid_object.h"
 #include <iomanip>
 #include "owner.h"
+#include "sleep.h"
 
 
 class Grid {
@@ -26,7 +27,7 @@ class Grid {
         }
     }
 
-    void print_grid(Owner<GO*>* owner, bool clear_output) const;
+    void print_grid(Owner<GO*>* owner, bool clear_output, int* wave, std::vector<double>* prob_output) const;
 
     GO*& operator()(int row, int column);
     const GO* operator()(int row, int column) const;
@@ -83,7 +84,7 @@ inline void Grid::delete_object(int row, int column) {
     this->operator()(row, column) = nullptr;
 }
 
-inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true) const {
+inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true, int* wave = nullptr, std::vector<double>* prob_output = nullptr) const {
     if (clear_output) {
         system("clear");
     }
@@ -94,10 +95,18 @@ inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true
             std::cout << "points: " << "E" << " ";
     }
     std::cout << "high score: " << 0 << " ";
+    if (wave != nullptr) {
+        std::cout << "wave: " << *wave << " ";
+    }
     std::cout << std::endl;
     std::cout << "  ";
     for (int i = 0; i < columns; i ++) {
-        std::cout << std::right << std::setw(3) <<  i + 1 << " ";
+        std::cout << std::right << std::setw(4) <<  std::fixed << std::setprecision(2) << prob_output->at(i) << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "  ";
+    for (int i = 0; i < columns; i ++) {
+        std::cout << std::right << std::setw(4) <<  i + 1 << " ";
     }
     std::cout << std::endl;
     for (int i = 0; i < size; i++) {
@@ -109,9 +118,9 @@ inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true
             std::cout << std::right << std::setw(2) <<((int)i / columns) + 1;
         }
         if (grid[i] != nullptr) {
-            std::cout << std::right << std::setw(3) << grid[i]->id << " ";
+            std::cout << std::right << std::setw(4) << grid[i]->id << " ";
         } else {
-            std::cout<< std::right << std::setw(3) << " " << " ";
+            std::cout<< std::right << std::setw(4) << " " << " ";
         }
     }
     std::cout << std::endl;

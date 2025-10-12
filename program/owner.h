@@ -8,23 +8,33 @@
 #include <string>
 #include <vector>
 
+struct Coordinate {
+    int row;
+    int column;
+
+    Coordinate(int row, int column) :row(row), column(column) {}
+};
+
 template<typename T>
 class Owner {
 
 
     bool game_over;
 
+
     protected:
+    int rows, columns;
     std::string name = "default";
     std::vector<T>* items = new std::vector<T>;
-
-    protected:
-
     int max_health = 1;
     int score = 0;
     Owner<T>* opponent;
+    std::vector<double> prob;
+    std::vector<Coordinate> deaths;
 
     public:
+
+    bool done;
 
     Owner(Owner<T>* opponent = nullptr) : opponent(opponent) {
         game_over = false;
@@ -38,10 +48,21 @@ class Owner {
         delete items;
     }
 
+    std::vector<double> return_probs() const {
+        return &prob;
+    }
+
     T get_items(int i) {
         size_t id = i;
         return items->at(id);
     }
+
+    virtual std::vector<double> generate_probs() {
+        std::vector<double> retur;
+        return retur;
+    }
+
+    virtual void return_death(int row, int column) {}
 
     void set_item(T obj, int index) {
         //check if in bounds
@@ -49,9 +70,28 @@ class Owner {
         items->at(i) = obj;
     }
 
+    bool is_empty() const {
+        bool empty = true;
+        for (int i = 0; i < 6; i++) {
+            empty = empty && (items->at(i) == nullptr);
+        }
+        return empty;
+    }
+
     void delete_from_items(int index) {
         items->at(index) = nullptr;
     }
+
+    void add_max_health(int n) {
+        max_health = max_health + n;
+    }
+
+    void set_dimensions(int& rows, int& columns) {
+        this->rows = rows;
+        this->columns = columns;
+        prob.resize(columns, 2.0);
+    }
+
 
     virtual int get_max_health() const {
         return max_health;
@@ -74,7 +114,7 @@ class Owner {
     }
 
 
-    virtual int make_move(int* column_move, int* index) {
+    virtual int make_move(int* column_move) {
         for (size_t i = 0; i < items->size(); i++) {
             if (items->at(i) != nullptr) {
                 items->at(i)->update();
