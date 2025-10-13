@@ -12,3 +12,6 @@ look up how to clear the terminal in cpp
 
 i made an object for the game which abstracts the placements of objects
 the game object will be the IO for the AI and player
+
+11/10/2025
+add high score via file reading
