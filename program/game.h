@@ -7,6 +7,8 @@
 #include "castle.h"
 #include "sleep.h"
 #include "owner.h"
+#include <csignal>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 
@@ -16,6 +18,7 @@ class Game {
     Grid* grid;
     Owner<GO*>* player;
     Owner<GO*>* ai;
+    int high_score;
 
     int enemies_placed = 0;
     int wave = 1;
@@ -28,10 +31,24 @@ class Game {
         grid->place(rows, (int)columns/2, new Castle(rows, (int)columns/2, grid, player));
         player->set_dimensions(grid->rows, grid->columns);
         ai->set_dimensions(grid->rows, grid->columns);
+        high_score = load_highscore();
+        grid->give_highscore(high_score);
+
     }
 
     ~Game() {
         delete grid;
+    }
+
+    int load_highscore() {
+        std::ifstream file("highscore.djayco");
+        if (!file) {
+            return -1;
+        } else {
+            std::string line;
+            getline(file, line);
+            return std::stoi(line);
+        }
     }
 
     template<typename T>
@@ -89,8 +106,14 @@ class Game {
         } else {
             system("clear");
             std::cout << "game over man" << std::endl;
-            std::cout << std::left << std::setw(10) << "score" << ": " << std::right << std::setw(6) << player->get_score() << std::endl;
-            std::cout << std::left << std::setw(10) << "high score" << ": " <<  std::right << std::setw(6) << "123456" << std::endl;
+            int score = player->get_score();
+            std::cout << std::left << std::setw(10) << "score" << ": " << std::right << std::setw(6) << score << std::endl;
+            if (score > high_score) {
+                std::ofstream file("highscore.djayco");
+                file << score;
+                high_score = score;
+            }
+            std::cout << std::left << std::setw(10) << "high score" << ": " <<  std::right << std::setw(6) << high_score << std::endl;
 
             //how to break??
         }

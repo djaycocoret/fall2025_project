@@ -5,6 +5,7 @@
 #include "grid_object.h"
 #include "sleep.h"
 #include <cmath>
+#include <cstdlib>
 #include <iostream>
 
 int draw_from_distribution(std::vector<double> probs) {
@@ -24,6 +25,7 @@ class AI : public Owner<GO*> {
 
     double learning_rate = 0.7;
     bool done = false;
+    int width_column_adjustment = 2; //where zero i just the column where stuff happened
 
 
     AI() : Owner<GO*>() {
@@ -53,12 +55,21 @@ class AI : public Owner<GO*> {
         deaths.push_back(Coordinate(row, column));
     }
 
+    void set_width(int width) {
+        width_column_adjustment = width;
+    }
+
     void update_moves(int column, bool killed) override {
-        int width = 0;
+        int scalar;
         if (killed) {
-           prob[column] = prob[column] - learning_rate;
+            scalar = -1;
         } else {
-            prob[column] = prob[column] + learning_rate;
+            scalar = 1;
+        }
+        for (int i = column - width_column_adjustment; i < column + width_column_adjustment; i++) {
+            if (i >= 0 && i <= columns) {
+                prob[i] = prob[i] + scalar * learning_rate * 1 / (abs(i - column) + 1);
+            }
         }
     }
 
@@ -79,9 +90,6 @@ class AI : public Owner<GO*> {
             }
         }
         done = true;
-        //this is where you can finalise the move
-        //below updates the prob -> change this to update based on the deaths
-        //prob[*column_move - 1] = prob[*column_move - 1] - learning_rate;
         return -1;
     }
 

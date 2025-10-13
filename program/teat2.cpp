@@ -19,7 +19,7 @@ int main() {
 
     while (!game.game_over_thing) {
         game.update();
-        sleep(1);
+        //sleep(1);
     }
 
     delete ai;

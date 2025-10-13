@@ -16,6 +16,7 @@ class Grid {
     std::vector<GO*> grid;
     int rows, columns;
     int size;
+    int highscore;
 
     Grid(int rows, int columns);
 
@@ -37,6 +38,9 @@ class Grid {
     GO*& id(int row, int column);
     bool move(int row, int column, int row_new, int column_new);
     void delete_object(int row, int column);
+    void give_highscore(int& highscore) {
+        this->highscore = highscore;
+    }
     void update() {
         for (int i = 0; i < size; i++) {
             if (grid[i] != nullptr) {
@@ -94,7 +98,7 @@ inline void Grid::print_grid(Owner<GO*>* owner=nullptr, bool clear_output = true
     } else {
             std::cout << "points: " << "E" << " ";
     }
-    std::cout << "high score: " << 0 << " ";
+    std::cout << "high score: " << highscore << " ";
     if (wave != nullptr) {
         std::cout << "wave: " << *wave << " ";
     }
