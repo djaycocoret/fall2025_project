@@ -46,6 +46,7 @@ class Enemy : public GO {
             grid->operator()(grid->rows, (int)grid->columns/2)->take_damage(10);
 
             //delete pointers from both the grid and items from owner
+            owner->update_moves(column - 1, false);
             this->remove_from_owner();
             grid->delete_object(row, column);
         }
@@ -55,6 +56,7 @@ class Enemy : public GO {
         health = health - dmg;
         if (health <= 0) {
             this->owner->return_opponent()->adjust_score(10);
+            owner->update_moves(column - 1, true);
             this->remove_from_owner();
             grid->delete_object(this->row, this->column);
         }

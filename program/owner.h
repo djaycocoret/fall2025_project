@@ -7,13 +7,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "sleep.h"
 
-struct Coordinate {
-    int row;
-    int column;
 
-    Coordinate(int row, int column) :row(row), column(column) {}
-};
 
 template<typename T>
 class Owner {
@@ -100,6 +96,8 @@ class Owner {
     virtual void set_opponent(Owner<T>* opp) {
         opponent = opp; //maybe make this a vector for dynamical
     }
+
+    virtual void update_moves(int column, bool killed) {}
 
     virtual int get_score() const {
         return score;

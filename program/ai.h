@@ -7,10 +7,22 @@
 #include <cmath>
 #include <iostream>
 
+int draw_from_distribution(std::vector<double> probs) {
+    double number = random_double(0,1);
+    double sum = 0;
+    for (int i = 0; i < probs.size(); i++) {
+        sum = sum + probs[i];
+        if (sum > number) {
+            return i;
+        }
+    }
+    return -1; //how do i make this prettier
+}
+
 class AI : public Owner<GO*> {
     public:
 
-    double learning_rate = 0.5;
+    double learning_rate = 0.7;
     bool done = false;
 
 
@@ -41,6 +53,15 @@ class AI : public Owner<GO*> {
         deaths.push_back(Coordinate(row, column));
     }
 
+    void update_moves(int column, bool killed) override {
+        int width = 0;
+        if (killed) {
+           prob[column] = prob[column] - learning_rate;
+        } else {
+            prob[column] = prob[column] + learning_rate;
+        }
+    }
+
     int make_move(int* column_move) override {
         //look at new at
         bool empty = true;
@@ -48,7 +69,8 @@ class AI : public Owner<GO*> {
             empty = empty && items->at(i) == nullptr;
             if (items->at(i) == nullptr) {
                 //place
-                *column_move = random_int(1, columns);
+                //*column_move = random_int(1, columns);
+                *column_move = draw_from_distribution(this->generate_probs());
                 //this should draw how the prob vector instead
             } else {
                 if (items->at(i) != nullptr) {
@@ -58,7 +80,8 @@ class AI : public Owner<GO*> {
         }
         done = true;
         //this is where you can finalise the move
-        prob[*column_move - 1] = prob[*column_move - 1] - learning_rate;
+        //below updates the prob -> change this to update based on the deaths
+        //prob[*column_move - 1] = prob[*column_move - 1] - learning_rate;
         return -1;
     }
 
