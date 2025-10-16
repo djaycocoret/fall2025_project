@@ -15,8 +15,8 @@ struct Coordinate {
     Coordinate(int row, int column) :row(row), column(column) {}
 };
 
-void sleep(int seconds) {
-	std::this_thread::sleep_for(std::chrono::seconds(2));
+void sleep(double seconds) {
+    std::this_thread::sleep_for(std::chrono::duration<double>(seconds));
 }
 
 

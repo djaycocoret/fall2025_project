@@ -81,7 +81,7 @@ class Game {
             generate = true;
             ai->add_max_health(1);
         }
-        if (wave > 5) {
+        if (wave > 10) {
             this->game_over_thing = true;
         }
         if (!this->game_over_thing) {

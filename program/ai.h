@@ -51,10 +51,6 @@ class AI : public Owner<GO*> {
         return prob_output;
     }
 
-    void return_death(int row, int column) override {
-        deaths.push_back(Coordinate(row, column));
-    }
-
     void set_width(int width) {
         width_column_adjustment = width;
     }
@@ -82,7 +78,6 @@ class AI : public Owner<GO*> {
                 //place
                 //*column_move = random_int(1, columns);
                 *column_move = draw_from_distribution(this->generate_probs());
-                //this should draw how the prob vector instead
             } else {
                 if (items->at(i) != nullptr) {
                     items->at(i)->update();

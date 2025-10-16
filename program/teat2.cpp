@@ -16,10 +16,12 @@ int main() {
     game.place_object<Tower>(4,7,player);
     game.place_object<Tower>(6,4,player);
     game.place_object<Tower>(5,5,player);
+    game.place_object<Tower>(10,17,player);
+    game.place_object<Tower>(5,12,player);
 
     while (!game.game_over_thing) {
         game.update();
-        //sleep(1);
+        sleep(0.5);
     }
 
     delete ai;
