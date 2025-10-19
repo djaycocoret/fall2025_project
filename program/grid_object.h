@@ -3,77 +3,52 @@
 
 #include <iostream>
 #include <string>
-#include "owner.h"
-
-
+#include "move.h"
+#include "grid.h"
 
 class GO {
     protected:
 
-    int row;
-    int column;
-
-
-    bool turn = false;
-    Owner<GO*>* owner;
+    int row, col; //index in grid (starting at 0)
+    int index; //index in owner vector
+    int health;
+    char id = 'd';
+    int power = 1;
+    Info* info;
+    Grid<GO>* grid;
 
     public:
 
+    GO(int row, int col, Info* info, int index, Grid<GO>* grid)
+    : row(row), col(col), info(info), index(index), grid(grid) {}
 
-
-    int index_thing;
-
-    char id = 'o';
-    int health;
-
-    GO(int row, int column, Owner<GO*>* owner = nullptr)
-        : row(row), column(column), owner(owner) {}
-
-    virtual ~GO() {}
-
-    void remove_from_owner() {
-        owner->return_death(this->row, this->column);
-        owner->delete_from_items(index_thing);
+    void virtual return_move(Move* move) { //make this empty and overload in child classes
     }
 
-    virtual void move_to(int row_new, int column_new) {}
 
-    virtual void print() const {
-        std::cout << row << ", " << column << std::endl;
+    void update_position(Move& move) {
+        if (move.moved_bool) {
+            this->row = move.row_new;
+            this->col = move.col_new;
+        }
     }
 
-    virtual void take_damage(int dmg) {}
-
-    virtual void shoot() {}
-
-    virtual void move_forward() {}
-
-    virtual Owner<GO*>* return_owner() {
-        return owner;
+    std::string return_cords() const {
+        return "(" + std::to_string(row) + ", " + std::to_string(col) + ")";
     }
 
-    void set_index(int i) {
-        index_thing = i;
+    void virtual take_dmg(int dmg) {
+        health = health - dmg;
     }
 
-    virtual int get_health() const {
-        return 0;
+    int get_power() {
+        return power;
     }
 
-    virtual void update() {}
-
-    virtual void end_turn() {
-        turn = true;
+    char get_id() const {
+        return id;
     }
 
-    std::string get_position() {
-        return "(" + std::to_string(row) + ", " + std::to_string(column) + ")";
-    }
-
-    template<typename K>
-    bool operator!=(const K& other) const {
-        return other != nullptr;
-    }
 };
 
 #endif

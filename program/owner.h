@@ -8,144 +8,51 @@
 #include <string>
 #include <vector>
 #include "sleep.h"
+#include "move.h"
 
+int const _max_agents = 6; //five towers, plus one castle; six enemies
 
-
-template<typename T>
+template <typename T>
 class Owner {
-
-
-    bool game_over;
-
-
     protected:
-    int rows, columns;
-    std::string name = "default";
-    std::vector<T>* items = new std::vector<T>;
-    int max_health = 1;
-    int score = 0;
-    Owner<T>* opponent;
-    std::vector<double> prob;
-    std::vector<Coordinate> deaths;
+    std::vector<T*> agents;
+    int grid_rows, grid_cols;
+    int score;
 
     public:
 
-    bool done;
-
-    Owner(Owner<T>* opponent = nullptr) : opponent(opponent) {
-        game_over = false;
-        items->resize(6);
+    Owner() {
+        agents.resize(_max_agents, nullptr);
     }
 
-    ~Owner() {
-        for (size_t i = 0; i < items->size(); i++) {
-            items->at(i) = nullptr;
+    T* const operator()(int index) const {
+        return agents.at(index);
+    }
+
+    T*& operator()(int index) {
+        return agents.at(index);
+    }
+
+    bool is_full() const {
+        bool is_full = true; //assumes is full and checks if this is the case
+        for (int i = 0; i < agents.size(); i++) {
+            is_full = (agents[i] != nullptr) && is_full;
         }
-        delete items;
+        return is_full;
     }
 
-    std::vector<double> return_probs() const {
-        return &prob;
-    }
-
-    T get_items(int i) {
-        size_t id = i;
-        return items->at(id);
-    }
-
-    virtual std::vector<double> generate_probs() {
-        std::vector<double> retur;
-        return retur;
-    }
-
-    virtual void return_death(int row, int column) {}
-
-    void set_item(T obj, int index) {
-        //check if in bounds
-        size_t i = index;
-        items->at(i) = obj;
-    }
-
-    bool is_empty() const {
-        bool empty = true;
-        for (int i = 0; i < 6; i++) {
-            empty = empty && (items->at(i) == nullptr);
-        }
-        return empty;
-    }
-
-    void delete_from_items(int index) {
-        items->at(index) = nullptr;
-    }
-
-    void add_max_health(int n) {
-        max_health = max_health + n;
-    }
-
-    void set_dimensions(int& rows, int& columns) {
-        this->rows = rows;
-        this->columns = columns;
-        prob.resize(columns, 2.0);
-    }
-
-
-    virtual int get_max_health() const {
-        return max_health;
-    }
-
-    virtual void set_opponent(Owner<T>* opp) {
-        opponent = opp; //maybe make this a vector for dynamical
-    }
-
-    virtual void update_moves(int column, bool killed) {}
-
-    virtual int get_score() const {
-        return score;
-    }
-
-    virtual Owner<T>* return_opponent() const {
-        return opponent;
-    }
-
-    virtual void adjust_score(int n) {
-        score = score + n;
-    }
-
-
-    virtual int make_move(int* column_move) {
-        for (size_t i = 0; i < items->size(); i++) {
-            if (items->at(i) != nullptr) {
-                items->at(i)->update();
+    int return_first_empty_index() const {
+            for (int i = 0; i < _max_agents; i++) {
+            if (agents[i] == nullptr) {
+                return i;
             }
         }
-        return 1;
+        return -1; //unsafe honestely, check if it has an empty spot first
     }
 
-    virtual std::vector<int> make_move_() {
-        return std::vector<int> {0};
-    }
+    std::vector<double> virtual generate_probs() {}
 
-    void print_objects() {
-        std::cout << std::left << std::setw(7) << this->name << ": ";
-        for (size_t i = 0 ; i < 5; i++) {
-            if (items->at(i) != nullptr) {
-                std::cout << items->at(i)->get_position() << " ";
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    bool operator!=(const Owner& other) const {
-        return true;
-    }
-
-    virtual void set_game_over(bool val) {
-        game_over = val;
-    }
-
-    virtual bool get_game_over() const {
-        return game_over;
-    }
+    void virtual update() {}
 };
 
 #endif

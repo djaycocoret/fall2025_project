@@ -3,30 +3,26 @@
 
 #include "grid_object.h"
 #include "grid.h"
-#include <utility>
+#include "move.h"
 
 class Castle : public GO {
 
     public:
 
-    Grid* grid;
+    Grid<GO>* grid;
 
     int health = 100;
     int speed = 1;
 
-    Castle(int row, int column, Grid*& grid, Owner<GO*>* owner)
-        : GO(row, column, owner), grid(grid) {
+    Castle(int row, int col, Info* info, int index, Grid<GO>*& grid)
+        : GO(row,  col, info,  index, grid),  {
             id = 'c';
         }
 
-    int get_health() const override {
-        return health;
-    }
-
-    void take_damage(int dmg) override {
+    void take_dmg(int dmg) override {
         health = health - dmg;
         if (health <= 0) {
-            owner->set_game_over(true);
+            info->game_over = true;
         }
     }
 };

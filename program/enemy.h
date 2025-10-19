@@ -6,61 +6,58 @@
 #include <utility>
 
 class Enemy : public GO {
+    int speed;
+
     public:
 
-    Grid* grid;
-
-    int health = 10;
-    int speed = 1;
-    int power = 10;
-
-    Enemy(int row, int column, Owner<GO*>* owner, Grid* grid)
-        : GO(row, column, owner), grid(grid) {
-            id = 'e';
-            if (owner != nullptr) {
-                health = owner->get_max_health();
-                //health = 100; //uncomment when hardcoding for testing
-            }
-        }
-
-    void update() override {
-            this->move_forward();
+    Enemy(int row, int col, Info* info, int index, Grid<GO>* grid)
+    :GO(row, col, info, index, grid) {
+        id = 'e';
+        health = 3;
+        speed = 1;
     }
 
-    void move_forward() override {
-        if (row+speed < grid->rows) { //so this is everything that is not the last row
-            if (grid->move(row, column, row + this->speed, column)){
-                row = row + this->speed;
-            } else if (grid->move(row, column, row + this->speed, column-1)) {
-                row = row + this->speed;
-                column = column - 1;
-            } else if (grid->move(row, column, row + this->speed, column+1)) {
-                row = row + this->speed;
-                column = column + 1;
-            } else { //if it cannot move, delete
-                this->remove_from_owner();
-                grid->delete_object(row, column);
-            }
-
-        } else { //this is when it reaches the last row
-            grid->operator()(grid->rows, (int)grid->columns/2)->take_damage(10);
-
-            //delete pointers from both the grid and items from owner
-            owner->update_moves(column - 1, false);
-            this->remove_from_owner();
-            grid->delete_object(row, column);
-        }
-    }
-
-    void take_damage(int dmg) override {
-        health = health - dmg;
+    void return_move(Move* move) override {
         if (health <= 0) {
-            this->owner->return_opponent()->adjust_score(10);
-            owner->update_moves(column - 1, true);
-            this->remove_from_owner();
-            grid->delete_object(this->row, this->column);
+            move->remove_obj = true;
+            move->row = row;
+            move->col = col;
+            move->index_owner = index;
+            info->score = info->score + 10;
+        } else if (row + speed < grid->get_rows()) {
+            if (grid->operator()(row+speed, col) == nullptr) {
+                move->movement_bool = true;
+                move->row = row;
+                move->col = col;
+                move->row_new = row+speed;
+                move->col_new = col;
+            } else if (grid->operator()(row+speed, col + 1) == nullptr) {
+                move->movement_bool = true;
+                move->row = row;
+                move->col = col;
+                move->row_new = row+speed;
+                move->col_new = col + 1;
+            } else if (grid->operator()(row+speed, col - 1) == nullptr) {
+                move->movement_bool = true;
+                move->row = row;
+                move->col = col;
+                move->row_new = row+speed;
+                move->col_new = col - 1;
+            } else { //if it cannot move, it will delete itself
+                move->remove_obj = true;
+                move->row = row;
+                move->col = col;
+                move->index_owner = index;
+            }
+        } else { //implies has health and the expected row will be bigger than the last row
+            move->remove_obj = true;
+            move->row = row;
+            move->col = col;
+            move->index_owner = index;
+            info->health = info->health - 10;
         }
     }
 };
+
 
 #endif

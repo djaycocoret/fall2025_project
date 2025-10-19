@@ -20,31 +20,31 @@ int draw_from_distribution(std::vector<double> probs) {
     return -1; //how do i make this prettier
 }
 
-class AI : public Owner<GO*> {
+class AI : public Owner<GO> {
     public:
+
+    std::vector<double> prob;
 
     double learning_rate = 0.7;
     bool done = false;
     int width_column_adjustment = 2; //where zero i just the column where stuff happened
 
 
-    AI() : Owner<GO*>() {
-        max_health = 3;
-        name = "AI";
+    AI() : Owner<GO>() {
+        prob.resize(grid_cols, 1.0);
     }
 
     ~AI() {}
 
     std::vector<double> generate_probs() override {
         std::vector<double> prob_output;
-        prob_output.resize(columns);
-        double temprature = 5;
+        prob_output.resize(grid_cols);
         double sum = 0;
-        for (int i = 0; i < columns; i++) {
+        for (int i = 0; i < grid_cols; i++) {
             sum = sum + exp(prob[i]); //
         }
 
-        for (int i = 0; i < columns; i++) {
+        for (int i = 0; i < grid_cols; i++) {
             prob_output[i] = exp(prob[i]) / sum;
         }
 
@@ -55,37 +55,12 @@ class AI : public Owner<GO*> {
         width_column_adjustment = width;
     }
 
-    void update_moves(int column, bool killed) override {
-        int scalar;
-        if (killed) {
-            scalar = -1;
-        } else {
-            scalar = 1;
-        }
-        for (int i = column - width_column_adjustment; i < column + width_column_adjustment; i++) {
-            if (i >= 0 && i <= columns) {
-                prob[i] = prob[i] + scalar * learning_rate * 1 / (abs(i - column) + 1);
+    void update() override {
+        for (int i = 0; i < 6; i++) {
+            if (agents[i] == nullptr) {
+                //
             }
         }
-    }
-
-    int make_move(int* column_move) override {
-        //look at new at
-        bool empty = true;
-        for (size_t i = 0; i < 5; i++) {
-            empty = empty && items->at(i) == nullptr;
-            if (items->at(i) == nullptr) {
-                //place
-                //*column_move = random_int(1, columns);
-                *column_move = draw_from_distribution(this->generate_probs());
-            } else {
-                if (items->at(i) != nullptr) {
-                    items->at(i)->update();
-                }
-            }
-        }
-        done = true;
-        return -1;
     }
 
 };
