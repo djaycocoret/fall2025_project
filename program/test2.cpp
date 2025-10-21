@@ -2,9 +2,6 @@
 
 int main() {
     Game game = Game(20, 20);
-
-    game.test();
-
-
+    game.game_main();
     return 0;
 }

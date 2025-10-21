@@ -9,10 +9,10 @@
 #include "move.h"
 
 
-template <typename T>
+template <typename T> //uses a template such that it can store any kind of object
 class Grid {
 
-    std::vector<T*> grid;
+    std::vector<T*> grid; //a vector of pointers to an object instead of us
 
     int rows, cols;
     int size;
@@ -52,10 +52,10 @@ class Grid {
         for (int i = 0; i < size; i++) {
             if (i % cols == 0) {
                 if (i != 0) {
-                    std::cout << std::right << std::setw(2) <<((int)i / cols);
-                  std::cout << std::endl;
+                    std::cout << std::right << std::setw(2) <<((int)i / cols - 1);
+                    std::cout << std::endl;
                 }
-                std::cout << std::right << std::setw(2) <<((int)i / cols);
+                    std::cout << std::right << std::setw(2) <<((int)i / cols);
             }
             if (grid[i] != nullptr) {
                 std::cout << std::right << std::setw(4) << grid[i]->get_id() << " ";
@@ -63,14 +63,39 @@ class Grid {
                 std::cout<< std::right << std::setw(4) << " " << " ";
             }
         }
+        std::cout << std::right << std::setw(2) <<(rows - 1);
+        std::cout << std::endl;
+    }
+
+    void print_index_grid() const { //maybe add an object that contains all game information as input?
+        std::cout << "  ";
+        for (int i = 0; i < cols; i ++) {
+            std::cout << std::right << std::setw(4) <<  i << " ";
+        }
+        std::cout << std::endl;
+
+        for (int i = 0; i < size; i++) {
+            if (i % cols == 0) {
+                if (i != 0) {
+                    std::cout << std::right << std::setw(2) <<((int)i / cols - 1);
+                    std::cout << std::endl;
+                }
+                    std::cout << std::right << std::setw(2) <<((int)i / cols);
+            }
+            if (grid[i] != nullptr) {
+                std::cout << std::right << std::setw(4) << grid[i]->get_index() << " ";
+            } else {
+                std::cout<< std::right << std::setw(4) << " " << " ";
+            }
+        }
+        std::cout << std::right << std::setw(2) <<(rows - 1);
         std::cout << std::endl;
     }
 
     T* const operator()(int row, int col) const { //row major indexing for grid
-        return grid[row * cols + col];
-    }
+        return grid[row * cols + col];    }
 
-    T*& operator()(int row, int col) { //row major indexing for grid
+    T*& operator()(int row, int col) { //column major indexing for grid
         return grid[row * cols + col];
     }
 
