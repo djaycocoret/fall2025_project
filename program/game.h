@@ -22,6 +22,27 @@ class Game {
 
     public:
 
+    Game(int rows, int cols) { // game intialises with dimensions of the board
+
+        grid = Grid<GO>(rows, cols); //initialises the grid
+        player = Player(rows, cols); //initialises the player
+        ai = AI(rows, cols); //initialses the ai
+
+        info.wave = 1; //initialises the info structure
+        info.health = 100;
+        info.score = 0;
+        info.rows = rows;
+        info.cols = cols;
+        std::ifstream file("highscore.djayco"); //opens highscore file
+        if (!file) {
+            info.highscore = 0;
+        } else {
+            std::string line;
+            getline(file, line);
+            info.highscore = std::stoi(line);
+        }
+    }
+
     Game(int rows, int cols, int diff) { // game intialises with dimensions of the board
 
         grid = Grid<GO>(rows, cols); //initialises the grid
