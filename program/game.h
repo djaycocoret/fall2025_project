@@ -80,6 +80,9 @@ class Game {
         if (info.health <= 0) {
             info.game_over = true;
         }
+        if (info.health < 50) {
+            grid(info.rows - 1, info.cols/2)->change_char('c');
+        }
         sleep(0.7);
     }
 

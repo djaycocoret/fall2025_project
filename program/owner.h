@@ -140,6 +140,7 @@ class AI : public Owner<GO> {
         } else {
             scalar = 1;
         }
+        //possibility to have adjustable width
         int w = std::min(1, width_column_adjustment);
         for (int i = move.col - w; i < move.col + w; i++) {
             if (i >= 0 && i <= grid_cols) {

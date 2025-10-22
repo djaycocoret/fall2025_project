@@ -56,6 +56,10 @@ class GO {
         return index;
     }
 
+    void change_char(char input) {
+        this->id = input;
+    }
+
 };
 
 class Enemy : public GO {
@@ -132,7 +136,7 @@ class Tower : public GO {
         for (int i = std::max(0, row - range); i <= std::min(info->rows - 1, row + range); i++) {
             for (int j = std::max(0, col - range); j <= std::min(info->cols - 1, col + range); j++) {
                 if ( std::sqrt( pow(i - row, 2) + pow(j - col, 2))  <= range) {
-                    if (grid->operator()(i,j) != nullptr && grid->operator()(i,j)->get_id() == 'e'   ) {
+                    if (grid->operator()(i,j) != nullptr && (grid->operator()(i,j)->get_id() == 'e' || grid->operator()(i,j)->get_id() == 'E') ) {
                             move->row_new = i;
                             move->col_new = j;
                             move->row = row;
@@ -153,7 +157,7 @@ class Castle : public GO {
 
     Castle(int row, int col, Info* info, int index, Grid<GO>*& grid)
         : GO(row,  col, info,  index, grid)  {
-            id = 'c';
+            id = 'C';
         }
 };
 

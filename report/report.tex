@@ -3,43 +3,216 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[inline]{enumitem}
 
-\title{Managing memory and behaviour: implementing dynamical strategy for artificial intelligence in tower defense game using C++}
-\author{Djayco Coret}
-\date{\today}
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+    showstringspaces=false
+}
 
 \begin{document}
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
 
-\maketitle
+    {\Large\textbf{Programming with C/C++}}\\[0.5cm]
 
-\begin{abstract}
-Your abstract goes here.
-\end{abstract}
+    {\large Academic year: 2025-2026, Fall semester}\\[0.5cm]
+    {\large\bfseries Programming assignment}\\[2cm]
 
-\section{Introduction}
+    {\LARGE\bfseries The Castle Defender}\\[0.3cm]
+    {\large Managing memory and behaviour}\\[6cm]
+
+    \begin{flushleft}
+    \large
+    \textbf{Student name: Djayco Coret} \\[0.3cm]
+    \textbf{Student number: 2108836/u868875}
+    \end{flushleft}
+
+    \vfill
+
+\end{titlepage}
+
+\section{Overview}
+This project had several requirements:
+have a functional grid;
+have functional towers;
+have functional enemies;
+have accurate scoring and endgame;
+have adaptive, in difficulty and spawning, artificial intelligence;
+all while writing clean, modular, OOP-based code.
+
+The requirements all have been fullfiled, yet code quality suffers from being created by a neurodivergent person, which might make it more difficult for neurotypicals to grasp.
+
+A simple, yet effective AI algorithm was implemented.
+After each death, when reaching the castle or being eliminated by a player tower, the AI will update the probability of selecting that column.
+This will lead to the AI selecting those columns which succesfully have attacked the castle, while avoiding those in which agents get eliminated.
+
+Difficulties were found when an agent has to interact with another agent.
+Since the agent is an element of the grid, and not the other way around, there was no trivial way for agents to interact.
+This problem was solved by creating a simple "move" structure, which contains all information such that the game and grid can execute the move.
+Another problem came in the form of recursive header calls.
+This problem was solved by generalising classes using templates.
+
+I worked on this project frequently, without clear schedule; just letting adhd do its thing.
+
+
+\section{Tasks and objectives}
+Inherentence was chosen because polymorphism in the templated grid object.
 Write your introduction here.
 
-\section{Main Content}
-This section can be divided into subsections if needed.
+\subsection{Battlefield}
+The battlefield is realised by a vector, using row-major indexing, of length $row * cols$ where the elements may point to an object in memory.
+Row-major indexing allows for the elements to be stored in a continuous fashion, which is more cache friendly (probably not noticable at this scale).
+The use of templates was necessary for modularity and recusive header calls (more on this in the challenges section).
+The vector stores memory adresses of the elements on the grid, where is stores a nullptr iff the position is vacant.
+
+\begin{lstlisting}
+template <typename T>
+class Grid {
+    std::vector<T*> grid;
+    int rows, cols;
+    ...
+
+    Grid(int rows, int cols) : rows(rows), cols(cols) {
+        size = rows * cols;
+        grid.resize(size, nullptr);
+    }
+
+    T* const operator()(int row, int col) const {
+        return grid[row * cols + col];
+    }
+
+    T*& operator()(int row, int col) {
+        return grid[row * cols + col];
+    }
+
+    ...
+\end{lstlisting}
+
+The game updates by iterating through all objects which belong to both the ai and the player.
+
+\subsection{Towers and attacks}
+Towers scan the grid using a nested for loop.
+Towers have access to the grid, via a pointer.
+Every turn all towers scan the places surrounding them (see below).
+If an enemy is detected, the move structure get updated.
+The tower only gets to shoot once, since, while the
+
+
+\begin{lstlisting}
+void return_move(Move* move) override {
+    for (int i = std::max(0, row - range); i <= std::min(info->rows - 1, row + range); i++) {
+        for (int j = std::max(0, col - range); j <= std::min(info->cols - 1, col + range); j++) {
+            if ( std::sqrt( pow(i - row, 2) + pow(j - col, 2))  <= range) {
+                if (grid->operator()(i,j) != nullptr && (grid->operator()(i,j)->get_id() == 'e' || grid->operator()(i,j)->get_id() == 'E') ) {
+                        move->row_new = i;
+                        move->col_new = j;
+                        move->row = row;
+                        move->col = col;
+                        move->shoot_bool = true;
+                        }}}}}
+\end{lstlisting}
+
+\subsection{Enemy movement}
 
 
 
-\subsection{Game design}
-Write the content for the subsection here.
+\subsection{Scoring and endgame}
+Scoring and endgame gets handled by the info structure.
+\begin{lstlisting}
+struct Info {
+    int rows, cols;
+    int wave, health;
+    int enemies_health = 3;
+    int enemies_placed = 0;
+    int enemies_placed_total = 0;
+    int score, highscore;
+    bool game_over = false;
+};
+\end{lstlisting}
+When an enemy has health smaller than 0, it increases the score attribute by ten.
 
-\subsection{C++ class structure}
-Write the content for the subsection here.
+The boolean value for game over gets updates with the game.
+If the health attribute of the info structure is smaller or equal to zero, game over gets set to true.
+Additionally, in the next wave method game over  gets set to true, if the current wave is bigger than the amount waves.
+When game over is true, a while loop breaks, ending the game.
 
-\subsection{Logic and adaptive strategy}
+\subsection{Enemy behaviour}
+Enemies only have the ability to move forward, or diagonal in some instances.
+Enemy spawning is more complex, and involves updating values based on deaths.
 
+Enemies can only move forward to the castle row.
+The enemy will only move forward if the spot is vacant, if the spot is occupied it will try to move diagonally, in either forward direction.
+If all legal directions are occupied, the enemy will be removed from the board.
+Some enemy types have a speed bigger than one, as such they will not check the spot(s) immediatly in front of them.
+These enemies can be considered arial units, making it a feature, not a bug.
+
+The spawning of enemies is more complex.
+Firstly, the AI has a vector of size amount columns, these get initialises to one real number.
+The AI also has an attribute called width column adjust, more on this later.
+Secondly, when an agent gets removed from the grid, the owner of the agent updates it's death.
+For the AI class it updates the values in the vector (see equation 1).
 \begin{equation}
-\dfrac{1}{|c_i - c_d| + 1} * \alpha
+z_{i, t} = x_{i, t-1} + \dfrac{r_c - d}{|i - column_{death}| + 1} * \alpha
 \end{equation}
+Where $i$ is the index of the column which gets updated, $r_c$ is the boolean value which is true iff the agent has reached the castle,
+$d$ if the boolean value which is true iff the agent was eliminated by a tower, $column_{death}$ is the index of the column where the agent has died,
+and $\alpha$ can be seen as analogous to a learning rate.
+The top part of the fraction will make it such that it substract when being killed, and adding when reaching the castle.
+Thirdly, an element wise operation gets performed on the vector (see equation 2).
+\begin{equation}
+x_i = \dfrac{e^{z_{i, t}}}{\sum_{z \in \mathcal{Z}}^{N} e^{z_j, t}}
+\end{equation}
+Given how the columns are somewhat similar as the output of the last hidden layer of a neural network, chose was made for a softmax.
+This creates a probability distribution.
+Finally, the AI draws from this distribution.
+
+\section{Challenges}
+Multiple challanges were found and solved. Details are discussed below.
+\begin{enumerate*}[label=\arabic*.]
+    \item Recursive header calls were solved using templates;
+    \item Interaction problem between agents was solved by introducing a \textit{move} structure;
+    \item Third item
+\end{enumerate*}
+
+\subsection{Solved}
+Recursive header calls were solved by using templates.
+Earlier versions of the project required all headers to include all headers
+(i.e., the grid had to include the grid object, and vice versa).
+This was initially solved by having subclasses in seperate header files, but this made the program harder to comprehend.
+To generalise the code, instead of having to rely on the grid object header, templates were used.
+Which also made much of the code reusable for other objects.
+
+\subsection{Partially solved}
+Interaction problem between age
+
+\subsection{Not solved}
 Write the content for the subsection here.
 
-\section{Conclusion}
-Write your conclusion here.
+\section{Discussion and future work}
+The AI having a different learning rate for each difficult is a interesting concept in my opinion.
+As far as I am aware, most difficulty adjustments change the available resources of the AI.
+While this is an interesting concept, static tower placement limit how intersting this AI really is.
+To further improve the learning of the AI, one will have to make the possibility to remove or move towers.
+Furthermore, the AI is limited in unlearning things.
 
-\section*{References}
-List your references here.
+The towers use a nested loop, which keeps going after a legal move has been found, even overwriting previous moves.
+On one hand, this makes sure the enemy which is latest in the grid (closer to the castle) gets shot at.
+On the other hand, the is computationally inefficient since it does not return after a move was found.
+Additionally, this is not a intelligent decision maker by any means.
+Stronger enemies (those with a higher speed, in this case), do not get prioritised.
+Future work should focus on making the towers intelligent agents.
+
+
 \end{document}

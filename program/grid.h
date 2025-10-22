@@ -95,7 +95,7 @@ class Grid {
     T* const operator()(int row, int col) const { //row major indexing for grid
         return grid[row * cols + col];    }
 
-    T*& operator()(int row, int col) { //column major indexing for grid
+    T*& operator()(int row, int col) {
         return grid[row * cols + col];
     }
 

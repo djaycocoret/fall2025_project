@@ -21,15 +21,12 @@ struct Move {
 };
 
 struct Info {
-    int rows;
-    int cols;
-    int wave;
+    int rows, cols;
+    int wave, health;
     int enemies_health = 3;
     int enemies_placed = 0;
     int enemies_placed_total = 0;
-    int score;
-    int highscore;
-    int health;
+    int score, highscore;
     bool game_over = false;
 };
 
