@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -163,20 +163,28 @@ Firstly, the AI has a vector of size amount columns, these get initialises to on
 The AI also has an attribute called width column adjust, more on this later.
 Secondly, when an agent gets removed from the grid, the owner of the agent updates it's death.
 For the AI class it updates the values in the vector (see equation 1).
-\begin{equation}
-z_{i, t} = x_{i, t-1} + \dfrac{r_c - d}{|i - column_{death}| + 1} * \alpha
+
+\begin{equation} \label{eq:update_logit}
+x_{i, t} = x_{i, t-1} + \dfrac{R - D}{|i - c_{d}| + 1} * \alpha
 \end{equation}
+
 Where $i$ is the index of the column which gets updated, $r_c$ is the boolean value which is true iff the agent has reached the castle,
-$d$ if the boolean value which is true iff the agent was eliminated by a tower, $column_{death}$ is the index of the column where the agent has died,
+$d$ if the boolean value which is true iff the agent was eliminated by a tower, $c_{d}$ is the index of the column where the agent has died,
 and $\alpha$ can be seen as analogous to a learning rate.
 The top part of the fraction will make it such that it substract when being killed, and adding when reaching the castle.
 Thirdly, an element wise operation gets performed on the vector (see equation 2).
 \begin{equation}
-x_i = \dfrac{e^{z_{i, t}}}{\sum_{z \in \mathcal{Z}}^{N} e^{z_j, t}}
+p_i = \dfrac{e^{x_{i, t}}}{\sum_{x \in \mathcal{X}}^{N} e^{x_j, t}}
 \end{equation}
 Given how the columns are somewhat similar as the output of the last hidden layer of a neural network, chose was made for a softmax.
 This creates a probability distribution.
 Finally, the AI draws from this distribution.
+\begin{equation}
+T: \mathbf{x_t} \mapsto \mathbf{p}
+\end{equation}
+
+It should be noted that every time the AI places an enemy, it copies and transforms the vector with raw data into a probability distribution.
+Ideally equation \ref{eq:update_logit} would update the probability distribution, but I did not know how.
 
 \section{Challenges}
 Multiple challanges were found and solved. Details are discussed below.
