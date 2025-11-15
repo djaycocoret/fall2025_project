@@ -43,20 +43,25 @@
 
 \end{titlepage}
 
+\section*{Generative artificial intelligence technology statement}
+
+I used Anthropic's Claude to write a LaTeX template based on the project report template, but all C/C++ code logic and implementation are my own.
+
+\newpage
+
 \section{Overview}
-This project had several requirements:
-have a functional grid;
-have functional towers;
-have functional enemies;
-have accurate scoring and endgame;
-have adaptive, in difficulty and spawning, artificial intelligence;
-all while writing clean, modular, OOP-based code.
+In this project a castle defender has to be developed.
+A castle defender game is a game where the user has to defend a castle from enemies.
+The user has the ability to place towers which will shoot and eliminate enemies.
+The game will end if the castle has ran out of health or all enemy waves have been spawned and cleared.
 
-The requirements all have been fullfiled, yet code quality suffers from being created by a neurodivergent person, which might make it more difficult for neurotypicals to grasp.
+Most requirements that have been set out in the project description have been fullfiled.
+Code quality is far from optimal.
+Initially the code was developed as a multi agent system engine, yet the requirements mention turn based movements, instead of distributed movements.
 
-A simple, yet effective AI algorithm was implemented.
-After each death, when reaching the castle or being eliminated by a player tower, the AI will update the probability of selecting that column.
-This will lead to the AI selecting those columns which succesfully have attacked the castle, while avoiding those in which agents get eliminated.
+A simple, yet effective artificial intelligence was implemented.
+The artificial intelligence draws from a probability distribution containing all legal moves, which is a transformed vector containing real valued numbers.
+After an enemy dies, the artificial intelligence updates the vector such that it will avoid the column where it was killed by a tower.
 
 Difficulties were found when an agent has to interact with another agent.
 Since the agent is an element of the grid, and not the other way around, there was no trivial way for agents to interact.
@@ -64,18 +69,25 @@ This problem was solved by creating a simple "move" structure, which contains al
 Another problem came in the form of recursive header calls.
 This problem was solved by generalising classes using templates.
 
-I worked on this project frequently, without clear schedule; just letting adhd do its thing.
-
+I worked on this project frequently, without clear schedule; just letting ADHD do its thing.
 
 \section{Tasks and objectives}
-Inherentence was chosen because polymorphism in the templated grid object.
-Write your introduction here.
+The grid was implemented using a template that can hold any datatype.
+A grid object was made, which has virtual methods, that can be used as a superclass for all object which are placed on the grid.
+The tower, enemy, and castle inherit from the grid object.
+By initialising the grid using the grid object datatype, runtime polymorphism can be used, such that all objects derived from the grid object can be placed on the grid.
+The grid objects will select a move or action, which the game object executes (e.g., killing an enemy or moving forward).
+A structure was implented for simpler interaction between parts of the program.
+An owner class was created as a baseclass for both the AI and player.
+The owner has access to all grid objects owned by that owner.
 
 \subsection{Battlefield}
-The battlefield is realised by a vector, using row-major indexing, of length $row * cols$ where the elements may point to an object in memory.
+The battlefield is realised by a vector from the standard library, using row-major indexing, of length $row * cols$ where the elements may point to a grid object in memory.
 Row-major indexing allows for the elements to be stored in a continuous fashion, which is more cache friendly (probably not noticable at this scale).
 The use of templates was necessary for modularity and recusive header calls (more on this in the challenges section).
 The vector stores memory adresses of the elements on the grid, where is stores a nullptr iff the position is vacant.
+
+The grid updates via the game header, more in this in the game section.
 
 \begin{lstlisting}
 template <typename T>
@@ -92,40 +104,89 @@ class Grid {
     T* const operator()(int row, int col) const {
         return grid[row * cols + col];
     }
-
-    T*& operator()(int row, int col) {
-        return grid[row * cols + col];
-    }
-
-    ...
 \end{lstlisting}
 
-The game updates by iterating through all objects which belong to both the ai and the player.
 
-\subsection{Towers and attacks}
+
+\subsection{Grid object}
+A grid object was used as a base class for other objects.
+Runtime polymorphism is used such that the object's methods being held by both the grid and owner can be overriden for specific behaviour.
+
+
+\subsubsection{Tower and castle}
 Towers scan the grid using a nested for loop.
 Towers have access to the grid, via a pointer.
-Every turn all towers scan the places surrounding them (see below).
 If an enemy is detected, the move structure get updated.
 The tower only gets to shoot once, since, while the
 
+\subsubsection{Enemy}
+Enemies only have the ability to move forward, or diagonal in some instances.
+Enemy spawning is more complex, and involves updating values based on deaths.
 
-\begin{lstlisting}
-void return_move(Move* move) override {
-    for (int i = std::max(0, row - range); i <= std::min(info->rows - 1, row + range); i++) {
-        for (int j = std::max(0, col - range); j <= std::min(info->cols - 1, col + range); j++) {
-            if ( std::sqrt( pow(i - row, 2) + pow(j - col, 2))  <= range) {
-                if (grid->operator()(i,j) != nullptr && (grid->operator()(i,j)->get_id() == 'e' || grid->operator()(i,j)->get_id() == 'E') ) {
-                        move->row_new = i;
-                        move->col_new = j;
-                        move->row = row;
-                        move->col = col;
-                        move->shoot_bool = true;
-                        }}}}}
-\end{lstlisting}
+Enemies can only move forward to the castle row.
+The enemy will only move forward if the spot is vacant, if the spot is occupied it will try to move diagonally, in either forward direction.
+If all legal directions are occupied, the enemy will be removed from the board.
+Some enemy types have a speed bigger than one, as such they will not check the spot(s) immediatly in front of them.
+These enemies can be considered arial units, making it a feature, not a bug.
 
-\subsection{Enemy movement}
+\subsection{Movement and other actions}
 
+\subsection{Owner}
+The owner object is the base class for both the player and artificial intelligence.
+The owner has a vector containing pointers to grid objects.
+Additional information, such as the dimensions of the grid.
+
+It should be noted that both the grid and an owner point to the same object.
+More on this in challenges.
+
+\subsubsection{Player}
+The player adds a upgrade tower method.
+
+\subsubsection{Artificial intelligence}
+
+\paragraph{Placing}
+The artificial intelligence spawns enemies by drawing from a probability distribution.
+Everytime a enemy gets spawned, the artificial intelligence transforms the vector containing logits into a probability distribution (see equation \ref{eq:transformation}).
+These logit get initialised to 1, such that one starts with a uniform probability distribution.
+
+\begin{equation} \label{eq:transformation}
+T: \mathbf{x_t} \mapsto \mathbf{p}
+\end{equation}
+
+Every element corresponds to a unique column, where $x_{i}$ refers to the i-th column.
+To transform the logit vector to a probability vector, an elementwise softmax is applied (see equation \ref{eq:to_pdf}.
+
+\begin{equation} \label{eq:to_pdf}
+p_i = \dfrac{e^{x_{i, t}}}{\sum_{x \in \mathcal{X}}^{N} e^{x_j, t}}
+\end{equation}
+
+The softmax allows for the summed values to be 1, and all values to be between 0 and 1.
+The updating process, allows for the logits to become negative.
+Exponentiating each element, thus, results in positive values.
+
+\paragraph{Learning}
+
+The logit vector gets updated using a formula that prioritises learning close to the location of death (see equation \ref{eq:update_logit}.
+The formula set out to do the following:
+decrease the value when an enemy dies because of enemy fire,
+increase the value when an eemy dies because it has reached the castle,
+and update the value of neighbouring columns in a similar, yet scaled fashion.
+
+
+\begin{equation} \label{eq:update_logit}
+x_{i, t} = x_{i, t-1} + \dfrac{R - D}{|i - c_{d}| + 1} * \alpha
+\end{equation}
+
+Where $R$ is the boolean value if the enemy has reached the castle,
+$D$ is the boolean value if the enemy has died because of enemy fire,
+$i$ is the index of the column which is being updated,
+$c_{d}$ is the index of the column where the enemy has died,
+\alpha is the learning rate,
+and $x_{i}$ is the logit value corrosponding to column i.
+
+Above the division it $R - D$, returns $-1$ when an enemy was killed by a tower; and return $1$ when it has reached the castle.
+Resulting in
+The top part of the fraction will make it such that it substract when being killed, and adding when reaching the castle.
 
 
 \subsection{Scoring and endgame}
@@ -149,49 +210,17 @@ Additionally, in the next wave method game over  gets set to true, if the curren
 When game over is true, a while loop breaks, ending the game.
 
 \subsection{Enemy behaviour}
-Enemies only have the ability to move forward, or diagonal in some instances.
-Enemy spawning is more complex, and involves updating values based on deaths.
 
-Enemies can only move forward to the castle row.
-The enemy will only move forward if the spot is vacant, if the spot is occupied it will try to move diagonally, in either forward direction.
-If all legal directions are occupied, the enemy will be removed from the board.
-Some enemy types have a speed bigger than one, as such they will not check the spot(s) immediatly in front of them.
-These enemies can be considered arial units, making it a feature, not a bug.
+\section{Game}
+The game header functions as an executive system, looping through all grid object being owned by an owner.
 
-The spawning of enemies is more complex.
-Firstly, the AI has a vector of size amount columns, these get initialises to one real number.
-The AI also has an attribute called width column adjust, more on this later.
-Secondly, when an agent gets removed from the grid, the owner of the agent updates it's death.
-For the AI class it updates the values in the vector (see equation 1).
-
-\begin{equation} \label{eq:update_logit}
-x_{i, t} = x_{i, t-1} + \dfrac{R - D}{|i - c_{d}| + 1} * \alpha
-\end{equation}
-
-Where $i$ is the index of the column which gets updated, $r_c$ is the boolean value which is true iff the agent has reached the castle,
-$d$ if the boolean value which is true iff the agent was eliminated by a tower, $c_{d}$ is the index of the column where the agent has died,
-and $\alpha$ can be seen as analogous to a learning rate.
-The top part of the fraction will make it such that it substract when being killed, and adding when reaching the castle.
-Thirdly, an element wise operation gets performed on the vector (see equation 2).
-\begin{equation}
-p_i = \dfrac{e^{x_{i, t}}}{\sum_{x \in \mathcal{X}}^{N} e^{x_j, t}}
-\end{equation}
-Given how the columns are somewhat similar as the output of the last hidden layer of a neural network, chose was made for a softmax.
-This creates a probability distribution.
-Finally, the AI draws from this distribution.
-\begin{equation}
-T: \mathbf{x_t} \mapsto \mathbf{p}
-\end{equation}
-
-It should be noted that every time the AI places an enemy, it copies and transforms the vector with raw data into a probability distribution.
-Ideally equation \ref{eq:update_logit} would update the probability distribution, but I did not know how.
 
 \section{Challenges}
 Multiple challanges were found and solved. Details are discussed below.
 \begin{enumerate*}[label=\arabic*.]
     \item Recursive header calls were solved using templates;
     \item Interaction problem between agents was solved by introducing a \textit{move} structure;
-    \item Third item
+    \item Pointers and manual memory
 \end{enumerate*}
 
 \subsection{Solved}
@@ -205,11 +234,9 @@ Which also made much of the code reusable for other objects.
 \subsection{Partially solved}
 Interaction problem between age
 
-\subsection{Not solved}
-Write the content for the subsection here.
-
 \section{Discussion and future work}
 The AI having a different learning rate for each difficult is a interesting concept in my opinion.
+Ideally equation \ref{eq:update_logit} would update the probability distribution, but I did not know how.
 As far as I am aware, most difficulty adjustments change the available resources of the AI.
 While this is an interesting concept, static tower placement limit how intersting this AI really is.
 To further improve the learning of the AI, one will have to make the possibility to remove or move towers.

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.9.15)  10 NOV 2025 12:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.9.15)  12 NOV 2025 14:33
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -398,31 +398,54 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.88         size 
-                  = rows * cols; [1]
+l.50 \newpage
+              [1]
 
 [2]
 
 [3]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.184 \alpha
+             is the learning rate,
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.185 and $x_
+             {i}$ is the logit value corrosponding to column i.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
 
 [4]
 
-[5] (./report.aux)
+[5]
+
+[6] (./report.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: D58F86CD0BAE65D34468434FD0BF1DBC;1535.
+(rerunfilecheck)             Checksum: 11302BA31FA1E5F798C1538E5B7D07FE;2130.
  ) 
 Here is how much of TeX's memory you used:
- 11952 strings out of 473190
- 180654 string characters out of 5715800
- 1019411 words of memory out of 5000000
- 35011 multiletter control sequences out of 15000+600000
+ 11915 strings out of 473190
+ 180293 string characters out of 5715800
+ 847411 words of memory out of 5000000
+ 34983 multiletter control sequences out of 15000+600000
  565677 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,79p,307b,2080s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,5n,79p,307b,1241s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -438,10 +461,10 @@ e/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive
 /2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2
 025/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/20
 25/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on report.pdf (6 pages, 181442 bytes).
+Output written on report.pdf (7 pages, 188368 bytes).
 PDF statistics:
- 221 PDF objects out of 1000 (max. 8388607)
- 181 compressed objects within 2 object streams
- 67 named destinations out of 1000 (max. 500000)
- 97 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 233 PDF objects out of 1000 (max. 8388607)
+ 192 compressed objects within 2 object streams
+ 58 named destinations out of 1000 (max. 500000)
+ 137 words of extra memory for PDF output out of 10000 (max. 10000000)
 

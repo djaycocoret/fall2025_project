@@ -19,9 +19,6 @@ void sleep(double seconds) {
     std::this_thread::sleep_for(std::chrono::duration<double>(seconds));
 }
 
-
-//i asked mistral ai how i would make a random int
-// not used in final project, only for testing
 int random_int(int min, int max) {
     std::random_device rd;
     std::mt19937 gen(rd());
