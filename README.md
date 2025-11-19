@@ -17,6 +17,23 @@ And run the program
 ./[name]
 ```
 
+Alternatively, you could use CMake to compile the program.
+Run  the following in your terminal to build the program.
+
+```zsh
+CMake -B build && cd build
+```
+
+```zsh
+make
+```
+
+And to run the program
+
+```zsh
+./TOWER_DEFENSE
+```
+
 ## Running the game
 
 Press any key and enter to continue, or type in 'djayco_cheat' to place 5 towers relatively spread out.
