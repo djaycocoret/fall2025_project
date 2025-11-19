@@ -5,17 +5,17 @@ While I have ported performance critical code from Python to C++ before, this wa
 
 ## Installation
 
-Use a C++ compiler to compile the code
+Use a C++ compiler to compile the code, I use g++.
 
-'''zsh
+```zsh
 g++ main.cpp -o [name]
-'''
+```
 
 And run the program
 
-'''zsh
+```zsh
 ./[name]
-'''
+```
 
 ## Running the game
 
