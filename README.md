@@ -36,7 +36,7 @@ And to run the program
 
 ## Running the game
 
-Press any key and enter to continue, or type in 'djayco_cheat' to place 5 towers relatively spread out.
+Press any key and enter to continue, or type in 'djayco_cheat' and hit enter to place 5 towers relatively spread out.
 
 If chosen the former option, enter a row followed by a column. Repeat till placed 5 towers.
 
