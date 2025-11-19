@@ -11,6 +11,8 @@ Use a C++ compiler to compile the code, I use g++.
 g++ main.cpp -o [name]
 ```
 
+This will generate two warnings.
+
 And run the program
 
 ```zsh
@@ -21,12 +23,10 @@ Alternatively, you could use CMake to compile the program.
 Run  the following in your terminal to build the program.
 
 ```zsh
-CMake -B build && cd build
+CMake -B build && cd build && make
 ```
 
-```zsh
-make
-```
+This will generate two warnings.
 
 And to run the program
 
