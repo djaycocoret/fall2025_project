@@ -28,7 +28,7 @@ class GO {
 
 
     void update_position(Move& move) {
-        if (move.moved_bool) { //updates the attributes iff
+        if (move.moved_bool) { //updates the attributes iff moved
             this->row = move.row_new;
             this->col = move.col_new;
         }
@@ -124,19 +124,21 @@ class Tower : public GO {
     Tower(int row, int col, Info* info, int index, Grid<GO>* grid)
     : GO(row, col, info, index, grid) {
         id = 't';
-        range = 3;
+        range = 2;
     }
 
     void upgrade_range() override {
-        this->range = this->range + 2;
+        this->range = this->range + 1;
         this->id = 'T';
     }
 
     void return_move(Move* move) override {
+        //nested loop that iterates over all places that might be in range (does check with pythagorean theorem)
         for (int i = std::max(0, row - range); i <= std::min(info->rows - 1, row + range); i++) {
             for (int j = std::max(0, col - range); j <= std::min(info->cols - 1, col + range); j++) {
                 if ( std::sqrt( pow(i - row, 2) + pow(j - col, 2))  <= range) {
                     if (grid->operator()(i,j) != nullptr && (grid->operator()(i,j)->get_id() == 'e' || grid->operator()(i,j)->get_id() == 'E') ) {
+                            //here position_new refers to the targeted position
                             move->row_new = i;
                             move->col_new = j;
                             move->row = row;

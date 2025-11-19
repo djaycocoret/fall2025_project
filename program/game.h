@@ -57,9 +57,9 @@ class Game {
         info.rows = rows;
         info.cols = cols;
         std::ifstream file("highscore.djayco"); //opens highscore file
-        if (!file) {
+        if (!file) { //if no file found, highscore = 0
             info.highscore = 0;
-        } else {
+        } else { //else read highscore
             std::string line;
             getline(file, line);
             info.highscore = std::stoi(line);
@@ -106,7 +106,6 @@ class Game {
             if (owner->operator()(i) != nullptr) {
                 Move move; //return move also does something to the grid
                 owner->operator()(i)->return_move(&move); //return the preferred move by the agent (the agent decides, not the ai)
-                // ABOVE make it such that it draws from the distribution.
                 this->execute_move(move, owner); //executes the move on the grid (move structure will be updated if the move has been executed)
                 owner->operator()(i)->update_position(move); //updates the attributes of the grid object accordingly
 
@@ -122,12 +121,12 @@ class Game {
         if (info.wave > AMOUNT_WAVES) {
             info.game_over = true; //after the 5th wave game is done
         }
-        system("clear");
+        system("clear"); //clears the terminal, such that it appears that the board gets updated
         grid.print_index_grid();
-        std::cout << "enter which tower you would like to update: ";
+        std::cout << "enter which tower you would like to upgrade: ";
         int upgrade_index;
         std::cin >> upgrade_index;
-        if (upgrade_index >= 0 && upgrade_index < _max_agents) {
+        if (upgrade_index > 0 && upgrade_index < _max_agents) { //the castle is considered an agend
             player.upgrade_tower(upgrade_index);
         }
         info.wave++; //next wave

@@ -19,13 +19,6 @@ void sleep(double seconds) {
     std::this_thread::sleep_for(std::chrono::duration<double>(seconds));
 }
 
-int random_int(int min, int max) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> distrib(min, max);
-    return distrib(gen);
-}
-
 double random_double(double min, double max) {
     std::random_device rd;
     std::mt19937 gen(rd());
