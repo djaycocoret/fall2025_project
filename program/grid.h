@@ -49,7 +49,7 @@ class Grid {
         }
         std::cout << std::endl;
 
-        //below prints the row numbers of the grid (hideos)
+        //below prints the row numbers of the grid (hideous)
         for (int i = 0; i < size; i++) { //so this is the loop that prints out the whole grid
             if (i % cols == 0) { //start of a row
                 if (i != 0) { //if not on the first row

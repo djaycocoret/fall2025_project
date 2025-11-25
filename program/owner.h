@@ -81,6 +81,9 @@ int draw_from_distribution(std::vector<double> probs) {
 }
 
 class Player : public Owner<GO> {
+
+    Info* info;
+
     public:
 
     Player(int grid_rows, int grid_cols) : Owner<GO>(grid_rows, grid_cols) {}
@@ -89,8 +92,16 @@ class Player : public Owner<GO> {
 
     ~Player() {}
 
+    void give_info_ptr(Info* info) {
+        this->info = info;
+    }
+
     void upgrade_tower(int index) {
+        if (index == 0) { //if castle selected, add health to the castle
+            info->health = info->health + 10;
+        } else {
         agents[index]->upgrade_range();
+        }
     }
 };
 

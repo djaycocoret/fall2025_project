@@ -53,43 +53,45 @@ I, D.A.S.R. Coret, used Anthropic's Claude to write a LaTeX template based on th
 In this project a castle defender game had to be developed.
 In such a game the user has to defend a castle from enemies approaching said castle.
 The user has the ability to place towers which will shoot and eliminate enemies.
+The artificial intelligence has the ability to place enemies in the top rows, yet will have to decide in which column.
 The game will end if the castle has ran out of health or all enemy waves have been spawned and cleared.
 
-Most requirements that have been set out in the project description have been fullfiled.
+Most requirements that have been set out in the project description have been fulfilled.
 Code quality is far from optimal.
-Initially the code was developed as a multi agent system engine, yet the requirements mention turn based movements, instead of distributed movements, this is a result of me beginning to code before fully reading the project assignment; which did teach me a valuable lession.
-There is no clear seperation of functionality, as many layers of the program had to interact with the grid, this continues to be an area of improvement. of my code style.
+Initially the code was developed as a multi agent system engine, yet the requirements mention turn based movements, instead of distributed movements.
+This is a result of me beginning to code before fully reading the project assignment; which did teach me a valuable lesson.
 
 A simple, yet effective artificial intelligence was implemented.
-The artificial intelligence learns by updating a probability distribution containing all legal moves, based on the deletion of enemies; recall how both enemies who got eliminated by a tower and enemies that have reached the castle have to be deleted.
+The artificial intelligence learns by updating a probability distribution containing all legal moves, based on the deletion of enemies; this takes advantage of the constraint that both enemies that have reached the castle and those that got eliminated by towers will have to be deleted from the grid.
 
-Difficulties were found when a grid object has to interact with another grid object.
+Difficulties were found when a grid object has to interact with another grid object (e.g., when shooting and updating health).
 Since the grid object is an element of the grid, and not the other way around, there was no trivial way for grid objects to interact.
 This problem was solved by creating a simple "move" structure, which contains all information such that the game and grid can execute the move.
 Another problem came in the form of recursive header calls.
 This problem was solved by generalising classes using templates.
+Additionally, the use of templates helped solve the interaction problem.
 
 I worked on this project frequently, without clear schedule.
 
 \section{Tasks and objectives}
 The grid was implemented using a template, such that it can hold any object.
-Pointers to the template object were stored, since the movement of pointers is faster than whole objects, and more pointers to the same object were needed.
-A grid object was made, which has virtual methods, that can be used as a superclass for all objects which are placed on the grid.
+Pointers to the template object were stored, since the movement of pointers is computationally more efficient than whole objects, and more pointers to the same object were needed.
+A grid object with virtual methods was made, which was used as a superclass for all objects which are placed on the grid.
 The tower, enemy, and castle inherit from the grid object.
 By initialising the grid using the grid object datatype, runtime polymorphism can be used, such that all objects derived from the grid object can be placed on the grid.
-Virtual methods were overriden to give grid objects unique behaviour.
+Virtual methods were overriden to give grid objects unique behaviour, which also uses runtime polymorphism.
 The grid objects will select a move or action, which the game object executes (e.g., killing an enemy or moving forward).
-A structure was implented for simpler interaction between parts of the program.
+A structure was implemented for simpler interaction between parts of the program (see \ref{sec:move}).
 An owner class was created as a baseclass for both the AI and player.
-The owner has access to all grid objects owned by that owner, resulting in multiple pointers directed to the same grid objects, in the grid and in the owner's grid objects (referred to as agents in code).
-Manual memory was allocated during the placement of objects, while it was deallocated either by the removal of an object or by the grid deconstructor.
+The owner has access to all grid objects owned by that owner, resulting in multiple pointers directed to the same grid objects, in the grid and in the owner's grid objects.
+Manual memory is allocated during the placement of objects, while it is deallocated either by the removal of an object or by the grid deconstructor.
 
 \subsection{Battlefield}
 The battlefield was realised by a vector from the standard library, using row-major indexing, of length $row * cols$ where the elements may point to a grid object in memory.
-Row-major indexing allows for the elements to be stored in a continuous fashion, which is more cache friendly (probably not noticable at this scale).
-The use of templates was necessary for modularity and fixing recusive header calls error (more on this in the challenges section).
+Row-major indexing allows for the elements to be stored in a continuous fashion, which is more cache friendly (probably not noticeable at this scale).
+The use of templates was necessary for modularity and fixing recursive header calls error (more on this in \ref{sec:challenges}).
 The vector stores pointers of the elements on the grid, where is stores a nullptr iff the position is vacant.
-Each position in the vector corrosponds with a patch.
+Each position in the vector corresponds with a unique patch.
 
 The grid updates via the game header, more in this in the game section.
 
@@ -115,9 +117,10 @@ A grid object was used as a base class for other objects.
 Runtime polymorphism is used such that the object's methods being held by both the grid and owner can be overriden for specific behaviour.
 The grid object receives a pointer to the grid, such that it can make observations on the grid (e.g., if object is on specific patch).
 
-\subsection{Movement and other actions}
+\subsection{Movement and other actions} \label{sec:move}
 Movement is delegated by the move structure, this serves as a middle layer between the grid objects and the game/grid.
 The grid object has a 'return\_move()' method, that changes a move structure to the preferred move by the grid object.
+It changes, instead of returning, since it returns a boolean value if it can make a legal move.
 
 See below for an example, see full code for full implementation.
 
@@ -130,7 +133,6 @@ struct Move {
 
     bool remove_obj = false;
     bool movement_bool = false;
-    bool shoot_bool = false;
     bool reached_castle = false;
 };
 \end{lstlisting}
@@ -149,10 +151,10 @@ Enemies only have the ability to move forward, or diagonal when forward path is 
 Enemy spawning is more complex and is discussed in \ref{sec:ai}.
 
 Enemies can only move forward to the castle row.
-The enemy will only move forward if the spot is vacant, if the spot is occupied it will try to move diagonally, in either forward direction \footnote{In theory the code could be adapted such that the enemy could draw for the probability distribution, but in reality these enemies rarely survive a collision with a tower}.
+The enemy will only move forward if the spot is vacant, if the spot is occupied it will try to move diagonally, in either forward direction \footnote{In theory the code could be adapted such that the enemy could draw for the probability distribution, but in reality these enemies rarely survive a collision with a tower, since they will be close and have less health than the tower has range}.
 If all legal directions are occupied, the enemy will be removed from the board.
 Some enemy types have a speed bigger than one, as such they will not check the spot(s) immediately in front of them.
-These enemies can be considered arial units, making it a feature, not a bug.
+These enemies should be considered arial units, making it a feature, not a bug.
 
 
 
@@ -174,18 +176,18 @@ Every time an enemy gets spawned, the artificial intelligence transforms the vec
 These logits get initialised to 1, such that one starts with a uniform probability distribution.
 
 \begin{equation} \label{eq:transformation}
-T: \mathbf{x_t} \mapsto \mathbf{p}
+T: \mathbf{x_t} \mapsto \mathbf{p_t}
 \end{equation}
 
 Every element corresponds to a unique column, where $x_{i}$ refers to the i-th column.
 To transform the logit vector to a probability vector, an element-wise softmax is applied (see equation \ref{eq:to_pdf}.
 
 \begin{equation} \label{eq:to_pdf}
-p_i = \dfrac{e^{x_{i, t}}}{\sum_{x \in \mathcal{X}}^{N} e^{x_j, t}}
+p_{i, t} = \dfrac{e^{x_{i, t}}}{\sum_{x \in \mathcal{X}}^{N} e^{x_j, t}}
 \end{equation}
 
 The softmax allows for the summed values to be 1, and all values to be between 0 and 1.
-The updating process, allows for the logits to become negative.
+The to be described updating process, allows for the logits to become negative.
 Exponentiating each element, thus, results in positive values.
 
 \paragraph{Learning}
@@ -195,7 +197,6 @@ The formula set out to do the following:
 decrease the value when an enemy dies because of enemy fire,
 increase the value when an enemy dies because it has reached the castle,
 and update the value of neighbouring columns in a similar, yet scaled fashion.
-
 
 \begin{equation} \label{eq:update_logit}
 x_{i, t} = x_{i, t-1} + \dfrac{R - D}{|i - c_{d}| + 1} * \alpha
@@ -208,10 +209,8 @@ $c_{d}$ is the index of the column where the enemy has died,
 \alpha is the learning rate,
 and $x_{i}$ is the logit value corresponding to column i.
 
-Above the division it $R - D$, returns $-1$ when an enemy was killed by a tower; and return $1$ when it has reached the castle.
-Resulting in
-The top part of the fraction will make it such that it subtract when being killed, and adding when reaching the castle.
-
+Above the division, $R - D$, returns $-1$ when an enemy is killed by a tower; and return $1$ when it reaches the castle.
+Resulting in the behaviour earlier described.
 
 \subsection{Scoring and endgame}
 Scoring and endgame gets handled by the info structure.
@@ -255,13 +254,11 @@ void execute_move(Move& move, Owner<GO>* owner) {
 }
 \end{lstlisting}
 
-
 \section{Challenges} \label{sec:challenges}
-Multiple challenges were found and solved. Details are discussed below.
+Multiple challenges were found and solved. Details are discussed in full below.
 \begin{enumerate*}[label=\arabic*.]
     \item Recursive header calls were solved using templates;
     \item Interaction problem between grid objects was solved by introducing a \textit{move} structure;
-    \item Pointers and manual memory
 \end{enumerate*}
 
 \subsection{Solved}

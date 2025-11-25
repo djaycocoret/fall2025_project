@@ -26,6 +26,10 @@ class GO {
     void virtual return_move(Move* move) { //make this empty and overload in child classes
     }
 
+    void add_health(int n) { //needed for castle restoration
+        this->health = this->health + n;
+    }
+
 
     void update_position(Move& move) {
         if (move.moved_bool) { //updates the attributes iff moved

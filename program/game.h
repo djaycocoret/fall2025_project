@@ -26,6 +26,7 @@ class Game {
 
         grid = Grid<GO>(rows, cols); //initialises the grid
         player = Player(rows, cols); //initialises the player
+        player.give_info_ptr(&info);
         ai = AI(rows, cols); //initialses the ai
 
         info.wave = 1; //initialises the info structure

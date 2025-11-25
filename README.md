@@ -43,3 +43,5 @@ If chosen the former option, enter a row followed by a column. Repeat till place
 ## About
 
 This project was made by Djayco Coret, finished 19 November 2025.
+All code is open source and can be adapted, extended, or otherwise in any way.
+I do not hold any responsibility for damage to your system.
